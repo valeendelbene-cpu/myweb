@@ -381,25 +381,51 @@
         /* --- Mobile --- */
         @media (max-width: 768px) {
             .navbar { 
-                width: 95%; 
+                width: 92%; /* Un poco más de margen a los lados */
                 padding: 10px 15px; 
                 bottom: 20px; 
                 top: auto; 
+                
+                /* Solución al desbordamiento: */
+                justify-content: space-between;
+                overflow-x: auto; /* Permite scroll lateral si la pantalla es muy pequeña */
+                white-space: nowrap; /* Evita que los textos salten de línea */
+                
+                /* Ocultar barra de desplazamiento estéticamente */
+                -ms-overflow-style: none;  /* IE y Edge */
+                scrollbar-width: none;  /* Firefox */
             }
+            
+            .navbar::-webkit-scrollbar {
+                display: none; /* Chrome, Safari y Opera */
+            }
+
+            /* OCULTAMOS EL LOGO EN MÓVIL para dar espacio a los botones */
             .nav-logo {
-                margin-right: 10px;
+                display: none;
             }
-            .nav-logo img {
-                height: 24px; /* Logo ligeramente más pequeño en móvil */
+
+            .nav-links { 
+                gap: 15px; /* Espacio reducido entre enlaces */
+                margin: 0; /* Quitamos el margin-left: auto de escritorio */
+                flex-grow: 1; /* Ocupar espacio disponible */
+                justify-content: flex-start;
             }
-            .nav-links { gap: 10px; }
-            .nav-link { font-size: 0.8rem; }
+
+            .nav-link { 
+                font-size: 0.85rem; /* Texto ligeramente más pequeño */
+            }
+            
             .hero { padding: 40px 20px; }
             h1 { font-size: 3rem; }
             .pricing-card.featured { transform: none; }
             
-            .lang-control { margin-left: 10px; }
-            .lang-btn { padding: 4px 6px; }
+            .lang-control { 
+                margin-left: 10px; 
+                flex-shrink: 0; /* Asegura que el selector de idioma no se aplaste */
+            }
+            .lang-btn { padding: 4px 8px; }
+        }
         }
     </style>
 </head>
