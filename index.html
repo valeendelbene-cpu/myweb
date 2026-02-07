@@ -39,7 +39,7 @@
             padding-top: 80px;
         }
 
-        /* --- Navbar Actualizada (Centrada sin Logo) --- */
+        /* --- Navbar (Configuración PC: Logo a la izquierda) --- */
         .navbar {
             position: fixed;
             top: 20px;
@@ -54,9 +54,28 @@
             border-radius: 50px;
             border: 1px solid var(--border);
             display: flex;
-            justify-content: center; /* Centrado */
+            justify-content: space-between; /* Separa logo de los links */
             align-items: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* Logo de la barra (Visible en PC) */
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            margin-right: 20px;
+        }
+
+        .nav-logo img {
+            height: 32px; /* Tamaño pequeño para la barra */
+            width: auto;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-logo:hover img {
+            transform: scale(1.05);
         }
 
         .nav-links {
@@ -64,7 +83,7 @@
             gap: 20px;
             list-style: none;
             align-items: center;
-            margin: 0; /* Eliminado el margin auto */
+            margin-left: auto;
         }
 
         .nav-link {
@@ -135,18 +154,13 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding-top: 40px; /* Un poco de espacio extra arriba */
         }
 
         .hero-content { max-width: 900px; z-index: 2; }
 
-        /* Estilos del Logo Central */
+        /* Logo Central (Oculto en PC por defecto) */
         .hero-logo {
-            display: block;
-            margin: 0 auto 2rem auto; /* Centrado horizontal y margen inferior */
-            width: 400px; /* Tamaño controlado, no muy grande */
-            height: auto;
-            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.1)); /* Sutil brillo */
+            display: none; 
         }
 
         .badge {
@@ -366,7 +380,7 @@
             font-size: 0.85rem;
         }
 
-        /* --- Mobile --- */
+        /* --- Mobile Responsiveness --- */
         @media (max-width: 768px) {
             .navbar { 
                 width: 92%; 
@@ -374,7 +388,7 @@
                 bottom: 20px; 
                 top: auto; 
                 
-                /* Solución al desbordamiento en móvil */
+                /* En móvil, centramos todo porque quitamos el logo de la barra */
                 justify-content: center;
                 overflow-x: auto; 
                 white-space: nowrap; 
@@ -387,8 +401,14 @@
                 display: none;
             }
 
+            /* 1. OCULTAMOS el logo de la barra en móvil */
+            .nav-logo {
+                display: none;
+            }
+
             .nav-links { 
                 gap: 15px;
+                margin: 0;
                 justify-content: center;
             }
 
@@ -397,11 +417,14 @@
             }
             
             .hero { padding: 40px 20px; }
-            
-            /* Ajuste de logo en móvil */
+
+            /* 2. MOSTRAMOS el logo grande central en móvil */
             .hero-logo {
-                width: 90px;
-                margin-bottom: 1.5rem;
+                display: block; /* Se hace visible solo en móvil */
+                width: 140px;   /* Tamaño grande y visible */
+                margin: 0 auto 1.5rem auto;
+                height: auto;
+                filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.1));
             }
 
             h1 { font-size: 3rem; }
@@ -418,6 +441,10 @@
 <body>
 
     <nav class="navbar">
+        <a href="#" class="nav-logo">
+            <img src="https://i.imgur.com/O0lkkHJ.png" alt="VDB Designs Logo">
+        </a>
+
         <ul class="nav-links">
             <li><a href="#portfolio" class="nav-link" data-es="Trabajos" data-en="Work">Trabajos</a></li>
             <li><a href="#pricing" class="nav-link" data-es="Planes" data-en="Plans">Planes</a></li>
