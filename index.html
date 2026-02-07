@@ -39,46 +39,24 @@
             padding-top: 80px;
         }
 
-        /* --- Navbar Actualizada con Logo --- */
+        /* --- Navbar Actualizada (Centrada sin Logo) --- */
         .navbar {
             position: fixed;
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            width: 95%; /* Un poco más ancho para acomodar el logo */
+            width: 95%;
             max-width: 900px;
             z-index: 1000;
             background: rgba(10, 10, 10, 0.7);
             backdrop-filter: blur(12px);
-            padding: 8px 20px; /* Ajuste ligero de padding */
+            padding: 8px 20px;
             border-radius: 50px;
             border: 1px solid var(--border);
             display: flex;
-            /* Cambiado de 'center' a 'space-between' para separar logo de links */
-            justify-content: space-between; 
+            justify-content: center; /* Centrado */
             align-items: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        /* Nuevos estilos para el contenedor del logo */
-        .nav-logo {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            margin-right: 20px; /* Espacio entre el logo y los links */
-        }
-
-        /* Estilos para la imagen del logo (Aquí se achica) */
-        .nav-logo img {
-            height: 32px; /* Altura controlada para que encaje en la navbar */
-            width: auto; /* Mantiene la proporción */
-            object-fit: contain;
-            transition: transform 0.3s ease;
-        }
-
-        /* Efecto hover sutil en el logo */
-        .nav-logo:hover img {
-            transform: scale(1.05);
         }
 
         .nav-links {
@@ -86,7 +64,7 @@
             gap: 20px;
             list-style: none;
             align-items: center;
-            margin-left: auto; /* Empuja los links a la derecha */
+            margin: 0; /* Eliminado el margin auto */
         }
 
         .nav-link {
@@ -157,9 +135,19 @@
             align-items: center;
             justify-content: center;
             text-align: center;
+            padding-top: 40px; /* Un poco de espacio extra arriba */
         }
 
         .hero-content { max-width: 900px; z-index: 2; }
+
+        /* Estilos del Logo Central */
+        .hero-logo {
+            display: block;
+            margin: 0 auto 2rem auto; /* Centrado horizontal y margen inferior */
+            width: 400px; /* Tamaño controlado, no muy grande */
+            height: auto;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.1)); /* Sutil brillo */
+        }
 
         .badge {
             display: inline-block;
@@ -381,61 +369,55 @@
         /* --- Mobile --- */
         @media (max-width: 768px) {
             .navbar { 
-                width: 92%; /* Un poco más de margen a los lados */
+                width: 92%; 
                 padding: 10px 15px; 
                 bottom: 20px; 
                 top: auto; 
                 
-                /* Solución al desbordamiento: */
-                justify-content: space-between;
-                overflow-x: auto; /* Permite scroll lateral si la pantalla es muy pequeña */
-                white-space: nowrap; /* Evita que los textos salten de línea */
+                /* Solución al desbordamiento en móvil */
+                justify-content: center;
+                overflow-x: auto; 
+                white-space: nowrap; 
                 
-                /* Ocultar barra de desplazamiento estéticamente */
-                -ms-overflow-style: none;  /* IE y Edge */
-                scrollbar-width: none;  /* Firefox */
+                -ms-overflow-style: none;
+                scrollbar-width: none;
             }
             
             .navbar::-webkit-scrollbar {
-                display: none; /* Chrome, Safari y Opera */
-            }
-
-            /* OCULTAMOS EL LOGO EN MÓVIL para dar espacio a los botones */
-            .nav-logo {
                 display: none;
             }
 
             .nav-links { 
-                gap: 15px; /* Espacio reducido entre enlaces */
-                margin: 0; /* Quitamos el margin-left: auto de escritorio */
-                flex-grow: 1; /* Ocupar espacio disponible */
-                justify-content: flex-start;
+                gap: 15px;
+                justify-content: center;
             }
 
             .nav-link { 
-                font-size: 0.85rem; /* Texto ligeramente más pequeño */
+                font-size: 0.85rem; 
             }
             
             .hero { padding: 40px 20px; }
+            
+            /* Ajuste de logo en móvil */
+            .hero-logo {
+                width: 90px;
+                margin-bottom: 1.5rem;
+            }
+
             h1 { font-size: 3rem; }
             .pricing-card.featured { transform: none; }
             
             .lang-control { 
                 margin-left: 10px; 
-                flex-shrink: 0; /* Asegura que el selector de idioma no se aplaste */
+                flex-shrink: 0; 
             }
             .lang-btn { padding: 4px 8px; }
-        }
         }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
-        <a href="#" class="nav-logo">
-            <img src="https://i.imgur.com/O0lkkHJ.png" alt="VDB Designs Logo">
-        </a>
-
         <ul class="nav-links">
             <li><a href="#portfolio" class="nav-link" data-es="Trabajos" data-en="Work">Trabajos</a></li>
             <li><a href="#pricing" class="nav-link" data-es="Planes" data-en="Plans">Planes</a></li>
@@ -450,6 +432,8 @@
 
     <section class="hero">
         <div class="hero-content">
+            <img src="https://i.imgur.com/O0lkkHJ.png" alt="VDB Designs Logo" class="hero-logo">
+
             <div class="badge" data-es="Disponible para nuevos proyectos" data-en="Available for new projects">● Disponible para nuevos proyectos</div>
             <h1 data-es="Miniaturas que <br><span class='gradient-text'>Generan Clicks</span>" data-en="Thumbnails That <br><span class='gradient-text'>Generate Clicks</span>">Miniaturas que <br><span class="gradient-text">Generan Clicks</span></h1>
             <p class="subtitle" data-es="Diseño estratégico para creadores que buscan dominar el algoritmo y aumentar su CTR." data-en="Strategic design for creators looking to dominate the algorithm and boost CTR.">Diseño estratégico para creadores que buscan dominar el algoritmo y aumentar su CTR.</p>
