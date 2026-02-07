@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VDB DESIGNS | Thumbnail Maker</title>
+    
+    <link rel="icon" type="image/png" href="https://i.imgur.com/t2ltHW4.png">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Identico al anterior */
+        :root {
+            --bg-color: #0b0c15; 
+            --surface-color: rgba(255, 255, 255, 0.03);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --primary-gradient: linear-gradient(135deg, #FF3B3B 0%, #FF8552 100%);
+            --accent-gradient: linear-gradient(135deg, #00FF87 0%, #60EFFF 100%);
+            --text-main: #ffffff;
+            --text-muted: #9CA3AF;
+            --border: rgba(255, 255, 255, 0.1);
+            --input-bg: rgba(0, 0, 0, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 59, 59, 0.15), transparent 40%),
+                radial-gradient(circle at 90% 60%, rgba(0, 255, 135, 0.12), transparent 40%),
+                radial-gradient(circle at 50% 100%, rgba(96, 239, 255, 0.05), transparent 50%);
+            background-attachment: fixed;
+            padding-top: 80px;
+        }
+
+        .navbar {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            width: 95%; max-width: 900px; z-index: 1000;
+            background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(12px);
+            padding: 8px 20px; border-radius: 50px;
+            border: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .nav-logo { display: flex; align-items: center; text-decoration: none; margin-right: 20px; }
+        .nav-logo img { height: 32px; width: auto; object-fit: contain; transition: transform 0.3s ease; }
+        .nav-logo:hover img { transform: scale(1.05); }
+
+        .nav-links { display: flex; gap: 20px; list-style: none; align-items: center; margin-left: auto; }
+        .nav-link { text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 0.9rem; transition: color 0.3s; white-space: nowrap; }
+        .nav-link:hover { color: #00FF87; }
+
+        .lang-control { display: flex; gap: 5px; background: rgba(255,255,255,0.05); padding: 3px; border-radius: 20px; margin-left: 20px; }
+        
+        .lang-btn {
+            background: transparent; border: none; color: var(--text-muted);
+            text-decoration: none; font-weight: 600; font-size: 0.75rem;
+            padding: 5px 10px; border-radius: 15px; transition: all 0.3s ease;
+            cursor: pointer; display: inline-block;
+        }
+        .lang-btn:hover { color: #fff; }
+        .lang-btn.active { background: var(--surface-hover); color: #fff; cursor: default; }
+
+        section { padding: 60px 20px; position: relative; }
+        .section-header { text-align: center; max-width: 700px; margin: 0 auto 40px; }
+        h1, h2, h3 { font-weight: 800; letter-spacing: -0.02em; }
+        h2 { font-size: 2.5rem; margin-bottom: 0.5rem; background: linear-gradient(to right, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .hero { min-height: 55vh; display: flex; align-items: center; justify-content: center; text-align: center; }
+        .hero-content { max-width: 900px; z-index: 2; }
+        .hero-logo { display: none; }
+        .badge { display: inline-block; padding: 6px 12px; background: rgba(0, 255, 135, 0.1); color: #00FF87; border-radius: 50px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem; border: 1px solid rgba(0, 255, 135, 0.2); text-transform: uppercase; letter-spacing: 1px; }
+        h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); line-height: 1.1; margin-bottom: 1rem; }
+        .gradient-text { background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 2rem; font-weight: 300; }
+        
+        .btn { padding: 14px 28px; font-size: 0.95rem; font-weight: 700; text-decoration: none; border-radius: 50px; transition: transform 0.3s ease, box-shadow 0.3s ease; display: inline-block; cursor: pointer; border: none; }
+        .btn-primary { background: var(--primary-gradient); color: white; box-shadow: 0 10px 20px rgba(255, 59, 59, 0.2); }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255, 59, 59, 0.35); }
+        .btn-secondary { background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); margin-left: 10px; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); transform: translateY(-3px); }
+
+        .stats-container { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; background: var(--surface-color); padding: 2rem; border-radius: 24px; border: 1px solid var(--border); backdrop-filter: blur(10px); }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 2.5rem; font-weight: 800; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat-label { color: var(--text-muted); font-size: 0.85rem; }
+
+        .portfolio-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .portfolio-item { border-radius: 20px; overflow: hidden; border: 1px solid var(--border); aspect-ratio: 16/9; transition: all 0.4s ease; }
+        .portfolio-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+        .portfolio-item:hover { transform: translateY(-5px); }
+        .portfolio-item:hover img { transform: scale(1.05); }
+        .behance-link { text-align: center; color: var(--text-muted); margin-top: 2rem; }
+        .behance-link a { color: #00FF87; text-decoration: none; font-weight: 700; margin-left: 5px; border-bottom: 1px solid transparent; transition: 0.3s; }
+        .behance-link a:hover { border-bottom-color: #00FF87; }
+
+        .pricing-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; align-items: center; }
+        .pricing-card { background: var(--surface-color); border: 1px solid var(--border); border-radius: 28px; padding: 2.5rem 1.5rem; text-align: center; transition: all 0.4s ease; position: relative; }
+        .pricing-card:hover { transform: translateY(-5px); background: var(--surface-hover); }
+        .pricing-card.featured { background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)); border: 1px solid rgba(0, 255, 135, 0.3); padding: 3.5rem 1.5rem; box-shadow: 0 20px 50px rgba(0, 255, 135, 0.05); z-index: 2; }
+        .plan-name { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; letter-spacing: 1px;}
+        .plan-price { font-size: 3rem; font-weight: 800; line-height: 1; }
+        .plan-period { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 2rem; }
+        .plan-features { list-style: none; margin-bottom: 2rem; text-align: left; padding: 0 10px; }
+        .plan-features li { padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.1); font-size: 0.9rem; display: flex; align-items: center; }
+        .plan-features li::before { content: '●'; color: #00FF87; font-size: 0.6rem; margin-right: 10px; }
+
+        .contact-container { max-width: 600px; margin: 0 auto; background: var(--surface-color); padding: 3rem; border-radius: 30px; border: 1px solid var(--border); backdrop-filter: blur(10px); }
+        .form-group { margin-bottom: 1.5rem; text-align: left; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
+        .form-input { width: 100%; padding: 15px; border-radius: 12px; background: var(--input-bg); border: 1px solid var(--border); color: #fff; font-family: 'Outfit', sans-serif; font-size: 1rem; transition: 0.3s; }
+        .form-input:focus { outline: none; border-color: #00FF87; background: rgba(0,0,0,0.5); }
+
+        .socials { text-align: center; padding-bottom: 2rem; }
+        .social-link { display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; background: var(--surface-color); border-radius: 50%; border: 1px solid var(--border); color: #fff; text-decoration: none; font-size: 1.2rem; transition: all 0.3s ease; margin: 0 10px; }
+        .social-link:hover { background: #fff; color: #000; transform: translateY(-5px); }
+        footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
+
+        @media (max-width: 768px) {
+            .navbar { width: 92%; padding: 10px 15px; bottom: 20px; top: auto; justify-content: center; overflow-x: auto; white-space: nowrap; -ms-overflow-style: none; scrollbar-width: none; }
+            .navbar::-webkit-scrollbar { display: none; }
+            .nav-logo { display: none; }
+            .nav-links { gap: 15px; margin: 0; justify-content: center; }
+            .nav-link { font-size: 0.85rem; }
+            .hero { padding: 40px 20px; }
+            .hero-logo { display: block; width: 140px; margin: 0 auto 1.5rem auto; height: auto; filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.1)); }
+            h1 { font-size: 3rem; }
+            .pricing-card.featured { transform: none; }
+            .lang-control { margin-left: 10px; flex-shrink: 0; }
+            .lang-btn { padding: 4px 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="#" class="nav-logo">
+            <img src="https://i.imgur.com/O0lkkHJ.png" alt="VDB Designs Logo">
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="#portfolio" class="nav-link">Work</a></li>
+            <li><a href="#pricing" class="nav-link">Plans</a></li>
+            <li><a href="#contact" class="nav-link">Contact</a></li>
+            <li><a href="#socials" class="nav-link">Socials</a></li>
+        </ul>
+        <div class="lang-control">
+            <a href="index.html" class="lang-btn">ES</a>
+            <span class="lang-btn active">EN</span>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <img src="https://i.imgur.com/O0lkkHJ.png" alt="VDB Designs Logo" class="hero-logo">
+
+            <div class="badge">● Available for new projects</div>
+            <h1>Thumbnails That <br><span class="gradient-text">Generate Clicks</span></h1>
+            <p class="subtitle">Strategic design for creators looking to dominate the algorithm and boost CTR.</p>
+            <div class="cta-group">
+                <a href="#contact" class="btn btn-primary">Start Now</a>
+                <a href="#portfolio" class="btn btn-secondary">View Work</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="stats-container">
+            <div class="stat-item"><div class="stat-number">+25%</div><div class="stat-label">Avg. CTR Increase</div></div>
+            <div class="stat-item"><div class="stat-number">24h</div><div class="stat-label">Fast Delivery</div></div>
+            <div class="stat-item"><div class="stat-number">100+</div><div class="stat-label">Happy Clients</div></div>
+        </div>
+    </section>
+
+    <section id="portfolio" class="portfolio">
+        <div class="section-header">
+            <h2>Selected Work</h2>
+        </div>
+        <div class="portfolio-grid">
+            <div class="portfolio-item"><img src="https://i.imgur.com/8eARKjY.png" alt="Thumbnail Design"></div>
+            <div class="portfolio-item"><img src="https://i.imgur.com/Wsdh6q8.png" alt="Thumbnail Design"></div>
+            <div class="portfolio-item"><img src="https://i.imgur.com/T4RkPsj.png" alt="Thumbnail Design"></div>
+            <div class="portfolio-item"><img src="https://i.imgur.com/0LDEYzN.png" alt="Thumbnail Design"></div>
+            <div class="portfolio-item"><img src="https://i.imgur.com/qbl0TJN.png" alt="Thumbnail Design"></div>
+            <div class="portfolio-item"><img src="https://i.imgur.com/YSOLvGe.png" alt="Thumbnail Design"></div>
+        </div>
+        
+        <div class="behance-link">
+            <span>There are more thumbnails in my Behance portfolio, access here:</span>
+            <a href="https://www.behance.net/gallery/216112723/youtube-thumbnails-2425" target="_blank">Behance Portfolio</a>
+        </div>
+    </section>
+
+    <section id="pricing" class="pricing">
+        <div class="section-header">
+            <h2>Simple Plans</h2>
+        </div>
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <div class="plan-name">Single</div>
+                <div class="plan-price">$59.99</div>
+                <div class="plan-period">One-time payment</div>
+                <ul class="plan-features">
+                    <li>48-hour delivery</li>
+                    <li>2 free revisions</li>
+                </ul>
+                <a href="#contact" class="btn btn-secondary" style="width:100%; margin:0;">I want it now</a>
+            </div>
+
+            <div class="pricing-card featured">
+                <div class="badge" style="margin-bottom: 1rem; background: var(--accent-gradient); color: #000; border: none;">BEST SELLER</div>
+                <div class="plan-name">Creator Pack</div>
+                <div class="plan-price">$199.99</div>
+                <div class="plan-period">4 Thumbnails / month</div>
+                <ul class="plan-features">
+                    <li>Priority Delivery (24h)</li>
+                    <li>Unlimited revisions</li>
+                    <li>VIP Support</li>
+                </ul>
+                <a href="#contact" class="btn btn-primary" style="width:100%; margin:0;">I want it now</a>
+            </div>
+
+            <div class="pricing-card">
+                <div class="plan-name">Pro Pack</div>
+                <div class="plan-price">$249.99</div>
+                <div class="plan-period">8 Thumbnails / month</div>
+                <ul class="plan-features">
+                    <li>Everything in Creator Pack</li>
+                    <li>Weekly CTR Analysis</li>
+                </ul>
+                <a href="#contact" class="btn btn-secondary" style="width:100%; margin:0;">I want it now</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="section-header">
+            <h2>Let's Work Together</h2>
+            <p>Fill out the form and I'll take your channel to the next level.</p>
+        </div>
+        
+        <div class="contact-container">
+            <form action="https://formspree.io/f/mgolekrj" method="POST">
+                <div class="form-group">
+                    <label class="form-label">Your Name</label>
+                    <input type="text" name="nombre" class="form-input" placeholder="e.g. John Doe" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Your Email</label>
+                    <input type="email" name="email" class="form-input" placeholder="john@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Your YouTube Channel</label>
+                    <input type="text" name="canal" class="form-input" placeholder="Channel Link" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Message (Optional)</label>
+                    <textarea class="form-input" name="mensaje" rows="3" placeholder="Tell me about your project..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; border:none;">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <section id="socials" class="socials">
+        <h3 style="margin-bottom: 2rem;">Follow Me</h3>
+        <a href="https://x.com/designs_vdb" target="_blank" class="social-link" title="X (Twitter)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z"/>
+            </svg>
+        </a>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 VDB DESIGNS. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
