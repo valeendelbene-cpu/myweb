@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VDB DESIGNS | Elevate Your Content</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0c15; 
+            --surface-color: rgba(255, 255, 255, 0.03);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --primary-gradient: linear-gradient(135deg, #FF3B3B 0%, #FF8552 100%);
+            --accent-gradient: linear-gradient(135deg, #00FF87 0%, #60EFFF 100%);
+            --text-main: #ffffff;
+            --text-muted: #9CA3AF;
+            --border: rgba(255, 255, 255, 0.1);
+            --input-bg: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 59, 59, 0.15), transparent 40%),
+                radial-gradient(circle at 90% 60%, rgba(0, 255, 135, 0.12), transparent 40%),
+                radial-gradient(circle at 50% 100%, rgba(96, 239, 255, 0.05), transparent 50%);
+            background-attachment: fixed;
+            padding-top: 80px;
+        }
+
+        /* --- Navbar Actualizada con Logo --- */
+        .navbar {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 95%; /* Un poco más ancho para acomodar el logo */
+            max-width: 900px;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(12px);
+            padding: 8px 20px; /* Ajuste ligero de padding */
+            border-radius: 50px;
+            border: 1px solid var(--border);
+            display: flex;
+            /* Cambiado de 'center' a 'space-between' para separar logo de links */
+            justify-content: space-between; 
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* Nuevos estilos para el contenedor del logo */
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            margin-right: 20px; /* Espacio entre el logo y los links */
+        }
+
+        /* Estilos para la imagen del logo (Aquí se achica) */
+        .nav-logo img {
+            height: 32px; /* Altura controlada para que encaje en la navbar */
+            width: auto; /* Mantiene la proporción */
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        /* Efecto hover sutil en el logo */
+        .nav-logo:hover img {
+            transform: scale(1.05);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+            align-items: center;
+            margin-left: auto; /* Empuja los links a la derecha */
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            color: #00FF87;
+        }
+
+        .lang-control {
+            display: flex;
+            gap: 5px;
+            background: rgba(255,255,255,0.05);
+            padding: 3px;
+            border-radius: 20px;
+            margin-left: 20px;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.75rem;
+            padding: 5px 10px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn.active {
+            background: var(--surface-hover);
+            color: #fff;
+        }
+
+        /* --- Layout --- */
+        section {
+            padding: 60px 20px;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+
+        h1, h2, h3 { font-weight: 800; letter-spacing: -0.02em; }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #fff, #aaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            min-height: 55vh; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .hero-content { max-width: 900px; z-index: 2; }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(0, 255, 135, 0.1);
+            color: #00FF87;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(0, 255, 135, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+
+        .gradient-text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            font-weight: 300;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: inline-block;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary { 
+            background: var(--primary-gradient); 
+            color: white; 
+            box-shadow: 0 10px 20px rgba(255, 59, 59, 0.2);
+        }
+        
+        .btn-primary:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 15px 30px rgba(255, 59, 59, 0.35);
+        }
+
+        .btn-secondary { 
+            background: rgba(255,255,255,0.05); 
+            color: white; 
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover { 
+            background: rgba(255,255,255,0.1); 
+            transform: translateY(-3px);
+        }
+
+        /* --- Stats --- */
+        .stats-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            background: var(--surface-color);
+            padding: 2rem;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+        }
+        .stat-item { text-align: center; }
+        .stat-number { 
+            font-size: 2.5rem; 
+            font-weight: 800; 
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-label { color: var(--text-muted); font-size: 0.85rem; }
+
+        /* --- Portfolio --- */
+        .portfolio-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .portfolio-item {
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            aspect-ratio: 16/9;
+            transition: all 0.4s ease;
+        }
+        .portfolio-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+        .portfolio-item:hover { transform: translateY(-5px); }
+        .portfolio-item:hover img { transform: scale(1.05); }
+
+        .behance-link {
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: 2rem;
+        }
+        .behance-link a {
+            color: #00FF87;
+            text-decoration: none;
+            font-weight: 700;
+            margin-left: 5px;
+            border-bottom: 1px solid transparent;
+            transition: 0.3s;
+        }
+        .behance-link a:hover { border-bottom-color: #00FF87; }
+
+        /* --- Pricing --- */
+        .pricing-grid {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            align-items: center;
+        }
+        .pricing-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        .pricing-card:hover { transform: translateY(-5px); background: var(--surface-hover); }
+        .pricing-card.featured {
+            background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+            border: 1px solid rgba(0, 255, 135, 0.3);
+            padding: 3.5rem 1.5rem;
+            box-shadow: 0 20px 50px rgba(0, 255, 135, 0.05);
+            z-index: 2;
+        }
+        .plan-name { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; letter-spacing: 1px;}
+        .plan-price { font-size: 3rem; font-weight: 800; line-height: 1; }
+        .plan-period { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 2rem; }
+        .plan-features { list-style: none; margin-bottom: 2rem; text-align: left; padding: 0 10px; }
+        .plan-features li { 
+            padding: 8px 0; 
+            border-bottom: 1px dashed rgba(255,255,255,0.1); 
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+        .plan-features li::before { content: '●'; color: #00FF87; font-size: 0.6rem; margin-right: 10px; }
+
+        /* --- Contact --- */
+        .contact-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--surface-color);
+            padding: 3rem;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group { margin-bottom: 1.5rem; text-align: left; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
+        .form-input {
+            width: 100%; padding: 15px; border-radius: 12px;
+            background: var(--input-bg); border: 1px solid var(--border);
+            color: #fff; font-family: 'Outfit', sans-serif; font-size: 1rem; transition: 0.3s;
+        }
+        .form-input:focus { outline: none; border-color: #00FF87; background: rgba(0,0,0,0.5); }
+
+        /* --- Redes (Socials) --- */
+        .socials { text-align: center; padding-bottom: 2rem; }
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: var(--surface-color);
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+        }
+        .social-link:hover {
+            background: #fff;
+            color: #000;
+            transform: translateY(-5px);
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* --- Mobile --- */
+        @media (max-width: 768px) {
+            .navbar { 
+                width: 95%; 
+                padding: 10px 15px; 
+                bottom: 20px; 
+                top: auto; 
+            }
+            .nav-logo {
+                margin-right: 10px;
+            }
+            .nav-logo img {
+                height: 24px; /* Logo ligeramente más pequeño en móvil */
+            }
+            .nav-links { gap: 10px; }
+            .nav-link { font-size: 0.8rem; }
+            .hero { padding: 40px 20px; }
+            h1 { font-size: 3rem; }
+            .pricing-card.featured { transform: none; }
+            
+            .lang-control { margin-left: 10px; }
+            .lang-btn { padding: 4px 6px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="#" class="nav-logo">
+            <img src="https://i.imgur.com/O0lkkHJ.png" alt="VDB Designs Logo">
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="#portfolio" class="nav-link" data-es="Trabajos" data-en="Work">Trabajos</a></li>
+            <li><a href="#pricing" class="nav-link" data-es="Planes" data-en="Plans">Planes</a></li>
+            <li><a href="#contact" class="nav-link" data-es="Contacto" data-en="Contact">Contacto</a></li>
+            <li><a href="#socials" class="nav-link" data-es="Redes" data-en="Socials">Redes</a></li>
+        </ul>
+        <div class="lang-control">
+            <button class="lang-btn active" onclick="setLanguage('es')">ES</button>
+            <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="badge" data-es="Disponible para nuevos proyectos" data-en="Available for new projects">● Disponible para nuevos proyectos</div>
+            <h1 data-es="Miniaturas que <br><span class='gradient-text'>Generan Clicks</span>" data-en="Thumbnails That <br><span class='gradient-text'>Generate Clicks</span>">Miniaturas que <br><span class="gradient-text">Generan Clicks</span></h1>
+            <p class="subtitle" data-es="Diseño estratégico para creadores que buscan dominar el algoritmo y aumentar su CTR." data-en="Strategic design for creators looking to dominate the algorithm and boost CTR.">Diseño estratégico para creadores que buscan dominar el algoritmo y aumentar su CTR.</p>
+            <div class="cta-group">
+                <a href="#contact" class="btn btn-primary" data-es="Empezar Ahora" data-en="Start Now">Empezar Ahora</a>
+                <a href="#portfolio" class="btn btn-secondary" data-es="Ver Trabajos" data-en="View Work">Ver Trabajos</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="stats-container">
+            <div class="stat-item"><div class="stat-number">+25%</div><div class="stat-label" data-es="CTR Promedio" data-en="Avg. CTR Increase">CTR Promedio</div></div>
+            <div class="stat-item"><div class="stat-number">24h</div><div class="stat-label" data-es="Entrega Rápida" data-en="Fast Delivery">Entrega Rápida</div></div>
+            <div class="stat-item"><div class="stat-number">100+</div><div class="stat-label" data-es="Clientes Felices" data-en="Happy Clients">Clientes Felices</div></div>
+        </div>
+    </section>
+
+    <section id="portfolio" class="portfolio">
+        <div class="section-header">
+            <h2 data-es="Trabajos Selectos" data-en="Selected Work">Trabajos Selectos</h2>
+        </div>
+        <div class="portfolio-grid">
+            <div class="portfolio-item"><img src="https://i.imgur.com/8eARKjY.png" alt="Thumbnail Design"></div>
+            <div class="portfolio-item"><img src="https://i.imgur.com/Wsdh6q8.png" alt="Thumbnail Design"></div>
+            <div class="portfolio-item"><img src="https://i.imgur.com/T4RkPsj.png" alt="Thumbnail Design"></div>
+            <div class="portfolio-item"><img src="https://i.imgur.com/0LDEYzN.png" alt="Thumbnail Design"></div>
+            <div class="portfolio-item"><img src="https://i.imgur.com/qbl0TJN.png" alt="Thumbnail Design"></div>
+            <div class="portfolio-item"><img src="https://i.imgur.com/YSOLvGe.png" alt="Thumbnail Design"></div>
+        </div>
+        
+        <div class="behance-link">
+            <span data-es="Hay más miniaturas en mi portafolio de Behance, accede aquí:" data-en="There are more thumbnails in my Behance portfolio, access here:">Hay más miniaturas en mi portafolio de Behance, accede aquí:</span>
+            <a href="https://www.behance.net/gallery/216112723/youtube-thumbnails-2425" target="_blank" data-es="Portafolio de Behance" data-en="Behance Portfolio">Portafolio de Behance</a>
+        </div>
+    </section>
+
+    <section id="pricing" class="pricing">
+        <div class="section-header">
+            <h2 data-es="Planes Simples" data-en="Simple Plans">Planes Simples</h2>
+        </div>
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <div class="plan-name" data-es="Individual" data-en="Single">Individual</div>
+                <div class="plan-price">$59.99</div>
+                <div class="plan-period" data-es="Pago único" data-en="One-time payment">Pago único</div>
+                <ul class="plan-features">
+                    <li data-es="Entrega en 48 horas" data-en="48-hour delivery">Entrega en 48 horas</li>
+                    <li data-es="2 revisiones gratuitas" data-en="2 free revisions">2 revisiones gratuitas</li>
+                </ul>
+                <a href="#contact" class="btn btn-secondary" style="width:100%; margin:0;" data-es="Lo quiero ahora" data-en="I want it now">Lo quiero ahora</a>
+            </div>
+
+            <div class="pricing-card featured">
+                <div class="badge" style="margin-bottom: 1rem; background: var(--accent-gradient); color: #000; border: none;">BEST SELLER</div>
+                <div class="plan-name" data-es="Pack Creador" data-en="Creator Pack">Pack Creador</div>
+                <div class="plan-price">$199.99</div>
+                <div class="plan-period" data-es="4 Miniaturas / mes" data-en="4 Thumbnails / month">4 Miniaturas / mes</div>
+                <ul class="plan-features">
+                    <li data-es="Entrega Prioritaria (24h)" data-en="Priority Delivery (24h)">Entrega Prioritaria (24h)</li>
+                    <li data-es="Revisiones ilimitadas" data-en="Unlimited revisions">Revisiones ilimitadas</li>
+                    <li data-es="Soporte VIP" data-en="VIP Support">Soporte VIP</li>
+                </ul>
+                <a href="#contact" class="btn btn-primary" style="width:100%; margin:0;" data-es="Lo quiero ahora" data-en="I want it now">Lo quiero ahora</a>
+            </div>
+
+            <div class="pricing-card">
+                <div class="plan-name" data-es="Pack Pro" data-en="Pro Pack">Pack Pro</div>
+                <div class="plan-price">$249.99</div>
+                <div class="plan-period" data-es="8 Miniaturas / mes" data-en="8 Thumbnails / month">8 Miniaturas / mes</div>
+                <ul class="plan-features">
+                    <li data-es="Todo lo del Pack Creador" data-en="Everything in Creator Pack">Todo lo del Pack Creador</li>
+                    <li data-es="Análisis semanal de CTR" data-en="Weekly CTR Analysis">Análisis semanal de CTR</li>
+                </ul>
+                <a href="#contact" class="btn btn-secondary" style="width:100%; margin:0;" data-es="Lo quiero ahora" data-en="I want it now">Lo quiero ahora</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="section-header">
+            <h2 data-es="Trabajemos Juntos" data-en="Let's Work Together">Trabajemos Juntos</h2>
+            <p data-es="Completa el formulario y elevaré tu canal al siguiente nivel." data-en="Fill out the form and I'll take your channel to the next level.">Completa el formulario y elevaré tu canal al siguiente nivel.</p>
+        </div>
+        
+        <div class="contact-container">
+            <form action="https://formspree.io/f/mgolekrj" method="POST">
+                <div class="form-group">
+                    <label class="form-label" data-es="Tu Nombre" data-en="Your Name">Tu Nombre</label>
+                    <input type="text" name="nombre" class="form-input" placeholder="Ej. Juan Pérez" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" data-es="Tu Email" data-en="Your Email">Tu Email</label>
+                    <input type="email" name="email" class="form-input" placeholder="juan@ejemplo.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" data-es="Tu Canal de YouTube" data-en="Your YouTube Channel">Tu Canal de YouTube</label>
+                    <input type="text" name="canal" class="form-input" placeholder="Link a tu canal" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" data-es="Mensaje (Opcional)" data-en="Message (Optional)">Mensaje (Opcional)</label>
+                    <textarea class="form-input" name="mensaje" rows="3" placeholder="Cuéntame sobre tu proyecto..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; border:none;" data-es="Enviar Mensaje" data-en="Send Message">Enviar Mensaje</button>
+            </form>
+        </div>
+    </section>
+
+    <section id="socials" class="socials">
+        <h3 style="margin-bottom: 2rem;" data-es="Sígueme" data-en="Follow Me">Sígueme</h3>
+        <a href="https://x.com/designs_vdb" target="_blank" class="social-link" title="X (Twitter)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z"/>
+            </svg>
+        </a>
+    </section>
+
+    <footer>
+        <p data-es="&copy; 2026 VDB DESIGNS. Todos los derechos reservados." data-en="&copy; 2025 VDB DESIGNS. Designed to impact.">&copy; 2026 VDB DESIGNS. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        function setLanguage(lang) {
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.innerText.toLowerCase() === lang) btn.classList.add('active');
+            });
+            
+            document.querySelectorAll('[data-es]').forEach(el => {
+                if(el.innerHTML.includes('<') || el.classList.contains('gradient-text') || el.parentNode.tagName === 'H1') {
+                    el.innerHTML = el.getAttribute('data-' + lang);
+                } else {
+                    el.innerText = el.getAttribute('data-' + lang);
+                }
+            });
+
+            document.documentElement.lang = lang;
+        }
+    </script>
+</body>
+</html>
