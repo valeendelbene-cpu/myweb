@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VDB DESIGNS | Thumbnail Maker</title>
+    <title>VDB DESIGNS | Creador de Miniaturas</title>
     
     <link rel="icon" type="image/png" href="https://i.imgur.com/t2ltHW4.png">
-    
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
     <style>
-        /* ... tu CSS ... */
         :root {
             --bg-color: #0b0c15; 
             --surface-color: rgba(255, 255, 255, 0.03);
@@ -22,12 +21,7 @@
             --input-bg: rgba(0, 0, 0, 0.3);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            scroll-behavior: smooth;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
 
         body {
             font-family: 'Outfit', sans-serif;
@@ -43,401 +37,111 @@
             padding-top: 80px;
         }
 
-        /* --- Navbar (Configuración PC: Logo a la izquierda) --- */
+        /* --- Navbar --- */
         .navbar {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 95%;
-            max-width: 900px;
-            z-index: 1000;
-            background: rgba(10, 10, 10, 0.7);
-            backdrop-filter: blur(12px);
-            padding: 8px 20px;
-            border-radius: 50px;
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            width: 95%; max-width: 900px; z-index: 1000;
+            background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(12px);
+            padding: 8px 20px; border-radius: 50px;
             border: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between; /* Separa logo de los links */
-            align-items: center;
+            display: flex; justify-content: space-between; align-items: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        /* Logo de la barra (Visible en PC) */
-        .nav-logo {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            margin-right: 20px;
-        }
+        .nav-logo { display: flex; align-items: center; text-decoration: none; margin-right: 20px; }
+        .nav-logo img { height: 32px; width: auto; object-fit: contain; transition: transform 0.3s ease; }
+        .nav-logo:hover img { transform: scale(1.05); }
 
-        .nav-logo img {
-            height: 32px; /* Tamaño pequeño para la barra */
-            width: auto;
-            object-fit: contain;
-            transition: transform 0.3s ease;
-        }
+        .nav-links { display: flex; gap: 20px; list-style: none; align-items: center; margin-left: auto; }
+        .nav-link { text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 0.9rem; transition: color 0.3s; white-space: nowrap; }
+        .nav-link:hover { color: #00FF87; }
 
-        .nav-logo:hover img {
-            transform: scale(1.05);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            list-style: none;
-            align-items: center;
-            margin-left: auto;
-        }
-
-        .nav-link {
-            text-decoration: none;
-            color: var(--text-main);
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: color 0.3s;
-            white-space: nowrap;
-        }
-
-        .nav-link:hover {
-            color: #00FF87;
-        }
-
-        .lang-control {
-            display: flex;
-            gap: 5px;
-            background: rgba(255,255,255,0.05);
-            padding: 3px;
-            border-radius: 20px;
-            margin-left: 20px;
-        }
-
+        .lang-control { display: flex; gap: 5px; background: rgba(255,255,255,0.05); padding: 3px; border-radius: 20px; margin-left: 20px; }
+        
+        /* Botones de idioma convertidos a enlaces */
         .lang-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.75rem;
-            padding: 5px 10px;
-            border-radius: 15px;
-            transition: all 0.3s ease;
+            background: transparent; border: none; color: var(--text-muted);
+            text-decoration: none; font-weight: 600; font-size: 0.75rem;
+            padding: 5px 10px; border-radius: 15px; transition: all 0.3s ease;
+            cursor: pointer; display: inline-block;
         }
-
-        .lang-btn.active {
-            background: var(--surface-hover);
-            color: #fff;
-        }
+        .lang-btn:hover { color: #fff; }
+        .lang-btn.active { background: var(--surface-hover); color: #fff; cursor: default; }
 
         /* --- Layout --- */
-        section {
-            padding: 60px 20px;
-            position: relative;
-        }
-
-        .section-header {
-            text-align: center;
-            max-width: 700px;
-            margin: 0 auto 40px;
-        }
-
+        section { padding: 60px 20px; position: relative; }
+        .section-header { text-align: center; max-width: 700px; margin: 0 auto 40px; }
         h1, h2, h3 { font-weight: 800; letter-spacing: -0.02em; }
+        h2 { font-size: 2.5rem; margin-bottom: 0.5rem; background: linear-gradient(to right, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        h2 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(to right, #fff, #aaa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* --- Hero Section --- */
-        .hero {
-            min-height: 55vh; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
+        /* --- Hero --- */
+        .hero { min-height: 55vh; display: flex; align-items: center; justify-content: center; text-align: center; }
         .hero-content { max-width: 900px; z-index: 2; }
-
-        /* Logo Central (Oculto en PC por defecto) */
-        .hero-logo {
-            display: none; 
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 6px 12px;
-            background: rgba(0, 255, 135, 0.1);
-            color: #00FF87;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            border: 1px solid rgba(0, 255, 135, 0.2);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        h1 {
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
-            line-height: 1.1;
-            margin-bottom: 1rem;
-        }
-
-        .gradient-text {
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .subtitle {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            max-width: 600px;
-            margin: 0 auto 2rem;
-            font-weight: 300;
-        }
-
-        .btn {
-            padding: 14px 28px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            text-decoration: none;
-            border-radius: 50px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: inline-block;
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-primary { 
-            background: var(--primary-gradient); 
-            color: white; 
-            box-shadow: 0 10px 20px rgba(255, 59, 59, 0.2);
-        }
+        .hero-logo { display: none; }
+        .badge { display: inline-block; padding: 6px 12px; background: rgba(0, 255, 135, 0.1); color: #00FF87; border-radius: 50px; font-size: 0.75rem; font-weight: 600; margin-bottom: 1rem; border: 1px solid rgba(0, 255, 135, 0.2); text-transform: uppercase; letter-spacing: 1px; }
+        h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); line-height: 1.1; margin-bottom: 1rem; }
+        .gradient-text { background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 2rem; font-weight: 300; }
         
-        .btn-primary:hover { 
-            transform: translateY(-3px); 
-            box-shadow: 0 15px 30px rgba(255, 59, 59, 0.35);
-        }
-
-        .btn-secondary { 
-            background: rgba(255,255,255,0.05); 
-            color: white; 
-            border: 1px solid rgba(255,255,255,0.1);
-            margin-left: 10px;
-        }
-
-        .btn-secondary:hover { 
-            background: rgba(255,255,255,0.1); 
-            transform: translateY(-3px);
-        }
+        .btn { padding: 14px 28px; font-size: 0.95rem; font-weight: 700; text-decoration: none; border-radius: 50px; transition: transform 0.3s ease, box-shadow 0.3s ease; display: inline-block; cursor: pointer; border: none; }
+        .btn-primary { background: var(--primary-gradient); color: white; box-shadow: 0 10px 20px rgba(255, 59, 59, 0.2); }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255, 59, 59, 0.35); }
+        .btn-secondary { background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); margin-left: 10px; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); transform: translateY(-3px); }
 
         /* --- Stats --- */
-        .stats-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem;
-            background: var(--surface-color);
-            padding: 2rem;
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            backdrop-filter: blur(10px);
-        }
+        .stats-container { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; background: var(--surface-color); padding: 2rem; border-radius: 24px; border: 1px solid var(--border); backdrop-filter: blur(10px); }
         .stat-item { text-align: center; }
-        .stat-number { 
-            font-size: 2.5rem; 
-            font-weight: 800; 
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        .stat-number { font-size: 2.5rem; font-weight: 800; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .stat-label { color: var(--text-muted); font-size: 0.85rem; }
 
         /* --- Portfolio --- */
-        .portfolio-grid {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        .portfolio-item {
-            border-radius: 20px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            aspect-ratio: 16/9;
-            transition: all 0.4s ease;
-        }
+        .portfolio-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .portfolio-item { border-radius: 20px; overflow: hidden; border: 1px solid var(--border); aspect-ratio: 16/9; transition: all 0.4s ease; }
         .portfolio-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
         .portfolio-item:hover { transform: translateY(-5px); }
         .portfolio-item:hover img { transform: scale(1.05); }
-
-        .behance-link {
-            text-align: center;
-            color: var(--text-muted);
-            margin-top: 2rem;
-        }
-        .behance-link a {
-            color: #00FF87;
-            text-decoration: none;
-            font-weight: 700;
-            margin-left: 5px;
-            border-bottom: 1px solid transparent;
-            transition: 0.3s;
-        }
+        .behance-link { text-align: center; color: var(--text-muted); margin-top: 2rem; }
+        .behance-link a { color: #00FF87; text-decoration: none; font-weight: 700; margin-left: 5px; border-bottom: 1px solid transparent; transition: 0.3s; }
         .behance-link a:hover { border-bottom-color: #00FF87; }
 
         /* --- Pricing --- */
-        .pricing-grid {
-            max-width: 1100px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            align-items: center;
-        }
-        .pricing-card {
-            background: var(--surface-color);
-            border: 1px solid var(--border);
-            border-radius: 28px;
-            padding: 2.5rem 1.5rem;
-            text-align: center;
-            transition: all 0.4s ease;
-            position: relative;
-        }
+        .pricing-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; align-items: center; }
+        .pricing-card { background: var(--surface-color); border: 1px solid var(--border); border-radius: 28px; padding: 2.5rem 1.5rem; text-align: center; transition: all 0.4s ease; position: relative; }
         .pricing-card:hover { transform: translateY(-5px); background: var(--surface-hover); }
-        .pricing-card.featured {
-            background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
-            border: 1px solid rgba(0, 255, 135, 0.3);
-            padding: 3.5rem 1.5rem;
-            box-shadow: 0 20px 50px rgba(0, 255, 135, 0.05);
-            z-index: 2;
-        }
+        .pricing-card.featured { background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)); border: 1px solid rgba(0, 255, 135, 0.3); padding: 3.5rem 1.5rem; box-shadow: 0 20px 50px rgba(0, 255, 135, 0.05); z-index: 2; }
         .plan-name { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; letter-spacing: 1px;}
         .plan-price { font-size: 3rem; font-weight: 800; line-height: 1; }
         .plan-period { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 2rem; }
         .plan-features { list-style: none; margin-bottom: 2rem; text-align: left; padding: 0 10px; }
-        .plan-features li { 
-            padding: 8px 0; 
-            border-bottom: 1px dashed rgba(255,255,255,0.1); 
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-        }
+        .plan-features li { padding: 8px 0; border-bottom: 1px dashed rgba(255,255,255,0.1); font-size: 0.9rem; display: flex; align-items: center; }
         .plan-features li::before { content: '●'; color: #00FF87; font-size: 0.6rem; margin-right: 10px; }
 
         /* --- Contact --- */
-        .contact-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: var(--surface-color);
-            padding: 3rem;
-            border-radius: 30px;
-            border: 1px solid var(--border);
-            backdrop-filter: blur(10px);
-        }
-
+        .contact-container { max-width: 600px; margin: 0 auto; background: var(--surface-color); padding: 3rem; border-radius: 30px; border: 1px solid var(--border); backdrop-filter: blur(10px); }
         .form-group { margin-bottom: 1.5rem; text-align: left; }
         .form-label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
-        .form-input {
-            width: 100%; padding: 15px; border-radius: 12px;
-            background: var(--input-bg); border: 1px solid var(--border);
-            color: #fff; font-family: 'Outfit', sans-serif; font-size: 1rem; transition: 0.3s;
-        }
+        .form-input { width: 100%; padding: 15px; border-radius: 12px; background: var(--input-bg); border: 1px solid var(--border); color: #fff; font-family: 'Outfit', sans-serif; font-size: 1rem; transition: 0.3s; }
         .form-input:focus { outline: none; border-color: #00FF87; background: rgba(0,0,0,0.5); }
 
-        /* --- Redes (Socials) --- */
+        /* --- Footer --- */
         .socials { text-align: center; padding-bottom: 2rem; }
-        .social-link {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 50px;
-            height: 50px;
-            background: var(--surface-color);
-            border-radius: 50%;
-            border: 1px solid var(--border);
-            color: #fff;
-            text-decoration: none;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-            margin: 0 10px;
-        }
-        .social-link:hover {
-            background: #fff;
-            color: #000;
-            transform: translateY(-5px);
-        }
+        .social-link { display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; background: var(--surface-color); border-radius: 50%; border: 1px solid var(--border); color: #fff; text-decoration: none; font-size: 1.2rem; transition: all 0.3s ease; margin: 0 10px; }
+        .social-link:hover { background: #fff; color: #000; transform: translateY(-5px); }
+        footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
 
-        footer {
-            border-top: 1px solid var(--border);
-            padding: 2rem;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        /* --- Mobile Responsiveness --- */
+        /* --- Mobile --- */
         @media (max-width: 768px) {
-            .navbar { 
-                width: 92%; 
-                padding: 10px 15px; 
-                bottom: 20px; 
-                top: auto; 
-                
-                /* En móvil, centramos todo porque quitamos el logo de la barra */
-                justify-content: center;
-                overflow-x: auto; 
-                white-space: nowrap; 
-                
-                -ms-overflow-style: none;
-                scrollbar-width: none;
-            }
-            
-            .navbar::-webkit-scrollbar {
-                display: none;
-            }
-
-            /* 1. OCULTAMOS el logo de la barra en móvil */
-            .nav-logo {
-                display: none;
-            }
-
-            .nav-links { 
-                gap: 15px;
-                margin: 0;
-                justify-content: center;
-            }
-
-            .nav-link { 
-                font-size: 0.85rem; 
-            }
-            
+            .navbar { width: 92%; padding: 10px 15px; bottom: 20px; top: auto; justify-content: center; overflow-x: auto; white-space: nowrap; -ms-overflow-style: none; scrollbar-width: none; }
+            .navbar::-webkit-scrollbar { display: none; }
+            .nav-logo { display: none; }
+            .nav-links { gap: 15px; margin: 0; justify-content: center; }
+            .nav-link { font-size: 0.85rem; }
             .hero { padding: 40px 20px; }
-
-            /* 2. MOSTRAMOS el logo grande central en móvil */
-            .hero-logo {
-                display: block; /* Se hace visible solo en móvil */
-                width: 140px;   /* Tamaño grande y visible */
-                margin: 0 auto 1.5rem auto;
-                height: auto;
-                filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.1));
-            }
-
+            .hero-logo { display: block; width: 140px; margin: 0 auto 1.5rem auto; height: auto; filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.1)); }
             h1 { font-size: 3rem; }
             .pricing-card.featured { transform: none; }
-            
-            .lang-control { 
-                margin-left: 10px; 
-                flex-shrink: 0; 
-            }
+            .lang-control { margin-left: 10px; flex-shrink: 0; }
             .lang-btn { padding: 4px 8px; }
         }
     </style>
@@ -450,14 +154,14 @@
         </a>
 
         <ul class="nav-links">
-            <li><a href="#portfolio" class="nav-link" data-es="Trabajos" data-en="Work">Trabajos</a></li>
-            <li><a href="#pricing" class="nav-link" data-es="Planes" data-en="Plans">Planes</a></li>
-            <li><a href="#contact" class="nav-link" data-es="Contacto" data-en="Contact">Contacto</a></li>
-            <li><a href="#socials" class="nav-link" data-es="Redes" data-en="Socials">Redes</a></li>
+            <li><a href="#portfolio" class="nav-link">Trabajos</a></li>
+            <li><a href="#pricing" class="nav-link">Planes</a></li>
+            <li><a href="#contact" class="nav-link">Contacto</a></li>
+            <li><a href="#socials" class="nav-link">Redes</a></li>
         </ul>
         <div class="lang-control">
-            <button class="lang-btn active" onclick="setLanguage('es')">ES</button>
-            <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+            <span class="lang-btn active">ES</span>
+            <a href="en.html" class="lang-btn">EN</a>
         </div>
     </nav>
 
@@ -465,120 +169,120 @@
         <div class="hero-content">
             <img src="https://i.imgur.com/O0lkkHJ.png" alt="VDB Designs Logo" class="hero-logo">
 
-            <div class="badge" data-es="Disponible para nuevos proyectos" data-en="Available for new projects">● Disponible para nuevos proyectos</div>
-            <h1 data-es="Miniaturas que <br><span class='gradient-text'>Generan Clicks</span>" data-en="Thumbnails That <br><span class='gradient-text'>Generate Clicks</span>">Miniaturas que <br><span class="gradient-text">Generan Clicks</span></h1>
-            <p class="subtitle" data-es="Diseño estratégico para creadores que buscan dominar el algoritmo y aumentar su CTR." data-en="Strategic design for creators looking to dominate the algorithm and boost CTR.">Diseño estratégico para creadores que buscan dominar el algoritmo y aumentar su CTR.</p>
+            <div class="badge">● Disponible para nuevos proyectos</div>
+            <h1>Miniaturas que <br><span class="gradient-text">Generan Clicks</span></h1>
+            <p class="subtitle">Diseño estratégico para creadores que buscan dominar el algoritmo y aumentar su CTR.</p>
             <div class="cta-group">
-                <a href="#contact" class="btn btn-primary" data-es="Empezar Ahora" data-en="Start Now">Empezar Ahora</a>
-                <a href="#portfolio" class="btn btn-secondary" data-es="Ver Trabajos" data-en="View Work">Ver Trabajos</a>
+                <a href="#contact" class="btn btn-primary">Empezar Ahora</a>
+                <a href="#portfolio" class="btn btn-secondary">Ver Trabajos</a>
             </div>
         </div>
     </section>
 
     <section class="stats">
         <div class="stats-container">
-            <div class="stat-item"><div class="stat-number">+25%</div><div class="stat-label" data-es="CTR Promedio" data-en="Avg. CTR Increase">CTR Promedio</div></div>
-            <div class="stat-item"><div class="stat-number">24h</div><div class="stat-label" data-es="Entrega Rápida" data-en="Fast Delivery">Entrega Rápida</div></div>
-            <div class="stat-item"><div class="stat-number">100+</div><div class="stat-label" data-es="Clientes Felices" data-en="Happy Clients">Clientes Felices</div></div>
+            <div class="stat-item"><div class="stat-number">+25%</div><div class="stat-label">CTR Promedio</div></div>
+            <div class="stat-item"><div class="stat-number">24h</div><div class="stat-label">Entrega Rápida</div></div>
+            <div class="stat-item"><div class="stat-number">100+</div><div class="stat-label">Clientes Felices</div></div>
         </div>
     </section>
 
     <section id="portfolio" class="portfolio">
         <div class="section-header">
-            <h2 data-es="Trabajos Selectos" data-en="Selected Work">Trabajos Selectos</h2>
+            <h2>Trabajos Selectos</h2>
         </div>
         <div class="portfolio-grid">
-            <div class="portfolio-item"><img src="https://i.imgur.com/8eARKjY.png" alt="Thumbnail Design"></div>
-            <div class="portfolio-item"><img src="https://i.imgur.com/Wsdh6q8.png" alt="Thumbnail Design"></div>
-            <div class="portfolio-item"><img src="https://i.imgur.com/T4RkPsj.png" alt="Thumbnail Design"></div>
-            <div class="portfolio-item"><img src="https://i.imgur.com/0LDEYzN.png" alt="Thumbnail Design"></div>
-            <div class="portfolio-item"><img src="https://i.imgur.com/qbl0TJN.png" alt="Thumbnail Design"></div>
-            <div class="portfolio-item"><img src="https://i.imgur.com/YSOLvGe.png" alt="Thumbnail Design"></div>
+            <div class="portfolio-item"><img src="https://i.imgur.com/8eARKjY.png" alt="Diseño de Miniatura"></div>
+            <div class="portfolio-item"><img src="https://i.imgur.com/Wsdh6q8.png" alt="Diseño de Miniatura"></div>
+            <div class="portfolio-item"><img src="https://i.imgur.com/T4RkPsj.png" alt="Diseño de Miniatura"></div>
+            <div class="portfolio-item"><img src="https://i.imgur.com/0LDEYzN.png" alt="Diseño de Miniatura"></div>
+            <div class="portfolio-item"><img src="https://i.imgur.com/qbl0TJN.png" alt="Diseño de Miniatura"></div>
+            <div class="portfolio-item"><img src="https://i.imgur.com/YSOLvGe.png" alt="Diseño de Miniatura"></div>
         </div>
         
         <div class="behance-link">
-            <span data-es="Hay más miniaturas en mi portafolio de Behance, accede aquí:" data-en="There are more thumbnails in my Behance portfolio, access here:">Hay más miniaturas en mi portafolio de Behance, accede aquí:</span>
-            <a href="https://www.behance.net/gallery/216112723/youtube-thumbnails-2425" target="_blank" data-es="Portafolio de Behance" data-en="Behance Portfolio">Portafolio de Behance</a>
+            <span>Hay más miniaturas en mi portafolio de Behance, accede aquí:</span>
+            <a href="https://www.behance.net/gallery/216112723/youtube-thumbnails-2425" target="_blank">Portafolio de Behance</a>
         </div>
     </section>
 
     <section id="pricing" class="pricing">
         <div class="section-header">
-            <h2 data-es="Planes Simples" data-en="Simple Plans">Planes Simples</h2>
+            <h2>Planes Simples</h2>
         </div>
         <div class="pricing-grid">
             <div class="pricing-card">
-                <div class="plan-name" data-es="Individual" data-en="Single">Individual</div>
+                <div class="plan-name">Individual</div>
                 <div class="plan-price">$59.99</div>
-                <div class="plan-period" data-es="Pago único" data-en="One-time payment">Pago único</div>
+                <div class="plan-period">Pago único</div>
                 <ul class="plan-features">
-                    <li data-es="Entrega en 48 horas" data-en="48-hour delivery">Entrega en 48 horas</li>
-                    <li data-es="2 revisiones gratuitas" data-en="2 free revisions">2 revisiones gratuitas</li>
+                    <li>Entrega en 48 horas</li>
+                    <li>2 revisiones gratuitas</li>
                 </ul>
-                <a href="#contact" class="btn btn-secondary" style="width:100%; margin:0;" data-es="Lo quiero ahora" data-en="I want it now">Lo quiero ahora</a>
+                <a href="#contact" class="btn btn-secondary" style="width:100%; margin:0;">Lo quiero ahora</a>
             </div>
 
             <div class="pricing-card featured">
-                <div class="badge" style="margin-bottom: 1rem; background: var(--accent-gradient); color: #000; border: none;">BEST SELLER</div>
-                <div class="plan-name" data-es="Pack Creador" data-en="Creator Pack">Pack Creador</div>
+                <div class="badge" style="margin-bottom: 1rem; background: var(--accent-gradient); color: #000; border: none;">MÁS VENDIDO</div>
+                <div class="plan-name">Pack Creador</div>
                 <div class="plan-price">$199.99</div>
-                <div class="plan-period" data-es="4 Miniaturas / mes" data-en="4 Thumbnails / month">4 Miniaturas / mes</div>
+                <div class="plan-period">4 Miniaturas / mes</div>
                 <ul class="plan-features">
-                    <li data-es="Entrega Prioritaria (24h)" data-en="Priority Delivery (24h)">Entrega Prioritaria (24h)</li>
-                    <li data-es="Revisiones ilimitadas" data-en="Unlimited revisions">Revisiones ilimitadas</li>
-                    <li data-es="Soporte VIP" data-en="VIP Support">Soporte VIP</li>
+                    <li>Entrega Prioritaria (24h)</li>
+                    <li>Revisiones ilimitadas</li>
+                    <li>Soporte VIP</li>
                 </ul>
-                <a href="#contact" class="btn btn-primary" style="width:100%; margin:0;" data-es="Lo quiero ahora" data-en="I want it now">Lo quiero ahora</a>
+                <a href="#contact" class="btn btn-primary" style="width:100%; margin:0;">Lo quiero ahora</a>
             </div>
 
             <div class="pricing-card">
-                <div class="plan-name" data-es="Pack Pro" data-en="Pro Pack">Pack Pro</div>
+                <div class="plan-name">Pack Pro</div>
                 <div class="plan-price">$249.99</div>
-                <div class="plan-period" data-es="8 Miniaturas / mes" data-en="8 Thumbnails / month">8 Miniaturas / mes</div>
+                <div class="plan-period">8 Miniaturas / mes</div>
                 <ul class="plan-features">
-                    <li data-es="Todo lo del Pack Creador" data-en="Everything in Creator Pack">Todo lo del Pack Creador</li>
-                    <li data-es="Análisis semanal de CTR" data-en="Weekly CTR Analysis">Análisis semanal de CTR</li>
+                    <li>Todo lo del Pack Creador</li>
+                    <li>Análisis semanal de CTR</li>
                 </ul>
-                <a href="#contact" class="btn btn-secondary" style="width:100%; margin:0;" data-es="Lo quiero ahora" data-en="I want it now">Lo quiero ahora</a>
+                <a href="#contact" class="btn btn-secondary" style="width:100%; margin:0;">Lo quiero ahora</a>
             </div>
         </div>
     </section>
 
     <section id="contact" class="contact">
         <div class="section-header">
-            <h2 data-es="Trabajemos Juntos" data-en="Let's Work Together">Trabajemos Juntos</h2>
-            <p data-es="Completa el formulario y elevaré tu canal al siguiente nivel." data-en="Fill out the form and I'll take your channel to the next level.">Completa el formulario y elevaré tu canal al siguiente nivel.</p>
+            <h2>Trabajemos Juntos</h2>
+            <p>Completa el formulario y elevaré tu canal al siguiente nivel.</p>
         </div>
         
         <div class="contact-container">
             <form action="https://formspree.io/f/mgolekrj" method="POST">
                 <div class="form-group">
-                    <label class="form-label" data-es="Tu Nombre" data-en="Your Name">Tu Nombre</label>
+                    <label class="form-label">Tu Nombre</label>
                     <input type="text" name="nombre" class="form-input" placeholder="Ej. Juan Pérez" required>
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label" data-es="Tu Email" data-en="Your Email">Tu Email</label>
+                    <label class="form-label">Tu Email</label>
                     <input type="email" name="email" class="form-input" placeholder="juan@ejemplo.com" required>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" data-es="Tu Canal de YouTube" data-en="Your YouTube Channel">Tu Canal de YouTube</label>
+                    <label class="form-label">Tu Canal de YouTube</label>
                     <input type="text" name="canal" class="form-input" placeholder="Link a tu canal" required>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" data-es="Mensaje (Opcional)" data-en="Message (Optional)">Mensaje (Opcional)</label>
+                    <label class="form-label">Mensaje (Opcional)</label>
                     <textarea class="form-input" name="mensaje" rows="3" placeholder="Cuéntame sobre tu proyecto..."></textarea>
                 </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%; border:none;" data-es="Enviar Mensaje" data-en="Send Message">Enviar Mensaje</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%; border:none;">Enviar Mensaje</button>
             </form>
         </div>
     </section>
 
     <section id="socials" class="socials">
-        <h3 style="margin-bottom: 2rem;" data-es="Sígueme" data-en="Follow Me">Sígueme</h3>
+        <h3 style="margin-bottom: 2rem;">Sígueme</h3>
         <a href="https://x.com/designs_vdb" target="_blank" class="social-link" title="X (Twitter)">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z"/>
@@ -587,26 +291,8 @@
     </section>
 
     <footer>
-        <p data-es="&copy; 2026 VDB DESIGNS. Todos los derechos reservados." data-en="&copy; 2025 VDB DESIGNS. All rights reserved.">&copy; 2026 VDB DESIGNS. Todos los derechos reservados.</p>
+        <p>&copy; 2026 VDB DESIGNS. Todos los derechos reservados.</p>
     </footer>
 
-    <script>
-        function setLanguage(lang) {
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if(btn.innerText.toLowerCase() === lang) btn.classList.add('active');
-            });
-            
-            document.querySelectorAll('[data-es]').forEach(el => {
-                if(el.innerHTML.includes('<') || el.classList.contains('gradient-text') || el.parentNode.tagName === 'H1') {
-                    el.innerHTML = el.getAttribute('data-' + lang);
-                } else {
-                    el.innerText = el.getAttribute('data-' + lang);
-                }
-            });
-
-            document.documentElement.lang = lang;
-        }
-    </script>
 </body>
 </html>
