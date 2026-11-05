@@ -102,8 +102,9 @@
 
         // El desenfoque empieza a la altura del título de clientes, para que el título se lea bien.
         function ajustarFundido() {
-            const titulo = document.querySelector('.hero').nextElementSibling.querySelector('h2').getBoundingClientRect();
-            const libre = window.innerHeight - (titulo.bottom + window.scrollY) + 10;
+            // Empieza justo debajo de la frase chica, para no taparla ni desenfocarla.
+            const encabezado = document.querySelector('.hero').nextElementSibling.querySelector('.section-header').getBoundingClientRect();
+            const libre = window.innerHeight - (encabezado.bottom + window.scrollY);
             fundido.style.maxHeight = Math.max(70, libre) + 'px';
         }
         window.addEventListener('resize', ajustarFundido);
@@ -314,6 +315,64 @@
         carrusel.replaceWith(marco);
         marco.appendChild(carrusel);
 
+        // Movimiento suave de la fila. Más milisegundos = frena más lento.
+        const DESLIZAR_FLECHAS = 170;
+        const DESLIZAR_INERCIA = 180;
+        const VELOCIDAD_MAXIMA = 2.2; // píxeles por milisegundo
+        const sinAnimaciones = window.matchMedia('(prefers-reduced-motion: reduce)');
+        let deslizandoClientes = false;
+        let objetivoClientes = 0;
+        let posicionClientes = 0;
+        let velocidadClientes = 0;
+        let tiempoDeslizar = 1;
+        let cuadroAnterior = 0;
+
+        function limiteClientes() {
+            return Math.max(0, carrusel.scrollWidth - carrusel.clientWidth);
+        }
+        function frenarClientes() {
+            deslizandoClientes = false;
+            velocidadClientes = 0;
+            carrusel.classList.remove('deslizando');
+        }
+        function deslizarClientes(destino, tiempo, velocidadInicial) {
+            objetivoClientes = Math.min(limiteClientes(), Math.max(0, destino));
+            if (sinAnimaciones.matches) {
+                frenarClientes();
+                carrusel.classList.add('deslizando');
+                carrusel.scrollLeft = objetivoClientes;
+                carrusel.classList.remove('deslizando');
+                return;
+            }
+            tiempoDeslizar = tiempo;
+            if (velocidadInicial !== undefined) velocidadClientes = velocidadInicial;
+            if (deslizandoClientes) return;
+            deslizandoClientes = true;
+            posicionClientes = carrusel.scrollLeft;
+            carrusel.classList.add('deslizando');
+            cuadroAnterior = performance.now();
+            requestAnimationFrame(cuadroClientes);
+        }
+        function cuadroClientes(ahora) {
+            if (!deslizandoClientes) return;
+            const lapso = Math.min(32, Math.max(1, ahora - cuadroAnterior));
+            cuadroAnterior = ahora;
+            // Un resorte sin rebote: arranca sin tirones y va frenando hasta quedar quieto.
+            const fuerza = 1 / tiempoDeslizar;
+            const aceleracion = fuerza * fuerza * (objetivoClientes - posicionClientes) - 2 * fuerza * velocidadClientes;
+            velocidadClientes += aceleracion * lapso;
+            posicionClientes += velocidadClientes * lapso;
+            const llego = Math.abs(objetivoClientes - posicionClientes) < 0.5 && Math.abs(velocidadClientes) < 0.02;
+            const fuera = posicionClientes <= 0 || posicionClientes >= limiteClientes();
+            if (llego || (fuera && Math.abs(objetivoClientes - posicionClientes) < 0.5)) {
+                carrusel.scrollLeft = objetivoClientes;
+                frenarClientes();
+                return;
+            }
+            carrusel.scrollLeft = posicionClientes;
+            requestAnimationFrame(cuadroClientes);
+        }
+
         function crearFlechaClientes(clase, trazo, sentido) {
             const boton = document.createElement('button');
             boton.type = 'button';
@@ -323,7 +382,8 @@
                 // Avanza de a clientes enteros, dejando uno a la vista para no perder el hilo.
                 const paso = clientes.querySelector('.cliente').offsetWidth + parseFloat(getComputedStyle(clientes).columnGap);
                 const entran = Math.max(1, Math.floor(carrusel.clientWidth / paso) - 1);
-                carrusel.scrollBy({ left: sentido * entran * paso });
+                const desde = deslizandoClientes ? objetivoClientes : carrusel.scrollLeft;
+                deslizarClientes(desde + sentido * entran * paso, DESLIZAR_FLECHAS);
             });
             marco.appendChild(boton);
             return boton;
@@ -354,12 +414,18 @@
         let arrastrado = false;
         let inicioX = 0;
         let inicioScroll = 0;
+        let frenadoConClic = false;
+        let recorrido = []; // últimos movimientos del mouse, para saber con qué impulso se soltó
         carrusel.addEventListener('pointerdown', function (e) {
+            // Tocar la fila mientras se desliza la frena; ese clic no abre a ningún cliente.
+            frenadoConClic = deslizandoClientes && Math.abs(velocidadClientes) > 0.1;
+            frenarClientes();
             if (e.pointerType !== 'mouse' || e.button !== 0) return;
             apretado = true;
             arrastrado = false;
             inicioX = e.clientX;
             inicioScroll = carrusel.scrollLeft;
+            recorrido = [{ x: e.clientX, t: e.timeStamp }];
         });
         carrusel.addEventListener('pointermove', function (e) {
             if (!apretado) return;
@@ -369,19 +435,38 @@
                 carrusel.classList.add('arrastrando');
                 carrusel.setPointerCapture(e.pointerId);
             }
-            if (arrastrado) carrusel.scrollLeft = inicioScroll - movido;
+            if (!arrastrado) return;
+            carrusel.scrollLeft = inicioScroll - movido;
+            recorrido.push({ x: e.clientX, t: e.timeStamp });
+            while (recorrido.length > 2 && e.timeStamp - recorrido[0].t > 100) recorrido.shift();
         });
-        function soltarClientes() {
+        function soltarClientes(e) {
+            if (!apretado) return;
             apretado = false;
             carrusel.classList.remove('arrastrando');
+            if (!arrastrado || sinAnimaciones.matches) return;
+            // Al soltar sigue un poquito más, según la velocidad que traía la mano.
+            const primero = recorrido[0];
+            const ultimo = recorrido[recorrido.length - 1];
+            const quieto = e.timeStamp - ultimo.t > 60; // si la mano se detuvo antes de soltar, no hay impulso
+            if (quieto || ultimo.t === primero.t) return;
+            const impulso = (primero.x - ultimo.x) / (ultimo.t - primero.t);
+            const velocidad = Math.max(-VELOCIDAD_MAXIMA, Math.min(VELOCIDAD_MAXIMA, impulso));
+            if (Math.abs(velocidad) < 0.05) return;
+            deslizarClientes(carrusel.scrollLeft + velocidad * DESLIZAR_INERCIA, DESLIZAR_INERCIA, velocidad);
         }
         carrusel.addEventListener('pointerup', soltarClientes);
         carrusel.addEventListener('pointercancel', soltarClientes);
         carrusel.addEventListener('dragstart', function (e) { e.preventDefault(); });
+        // Si la persona desliza con la rueda o el trackpad, manda ella.
+        carrusel.addEventListener('wheel', function (e) {
+            if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) frenarClientes();
+        }, { passive: true });
         // Si se estaba arrastrando, soltar el mouse no abre al cliente que quedó debajo.
         carrusel.addEventListener('click', function (e) {
-            if (!arrastrado) return;
+            if (!arrastrado && !frenadoConClic) return;
             arrastrado = false;
+            frenadoConClic = false;
             e.stopPropagation();
             e.preventDefault();
         }, true);

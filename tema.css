@@ -12,7 +12,8 @@
     --sans: 'Manrope', Arial, sans-serif;
     --alto-foto: 150px;
     --titulo-clientes: clamp(2.1rem, 3.6vw, 3.4rem);
-    --reserva-clientes: calc(14px + var(--titulo-clientes) * 1.3 + 36px + var(--alto-foto) * 0.25);
+    --alto-aviso: 32px; /* la frase chica debajo del título de clientes */
+    --reserva-clientes: calc(14px + var(--titulo-clientes) * 1.3 + var(--alto-aviso) + 36px + var(--alto-foto) * 0.25);
 }
 
 body {
@@ -136,6 +137,7 @@ h1 {
 #clientes .section-header, #clients .section-header { margin-bottom: 36px; max-width: 900px; }
 #clientes h2, #clients h2 { font-size: var(--titulo-clientes); margin-bottom: 0; }
 .section-header p { font-weight: 300; color: var(--texto-suave); }
+.section-header p.aviso-clientes { margin: 10px 0 0; font-size: 0.88rem; line-height: 22px; letter-spacing: 0.01em; }
 /* Una sola fila que se desliza con las flechas, arrastrando o con el dedo. */
 .clientes-marco { --aire-arriba: 64px; position: relative; margin: calc(var(--aire-arriba) * -1) -20px -60px; }
 .clientes-carrusel {
@@ -151,6 +153,7 @@ h1 {
 .clientes-carrusel::-webkit-scrollbar { display: none; }
 .clientes-carrusel.arrastrando { cursor: grabbing; scroll-behavior: auto; -webkit-user-select: none; user-select: none; }
 .clientes-carrusel.arrastrando .cliente { cursor: grabbing; }
+.clientes-carrusel.deslizando { scroll-behavior: auto; }
 .clientes-grid {
     display: flex;
     gap: 24px;
@@ -413,7 +416,7 @@ footer { color: var(--texto-suave); }
     :root {
         --alto-foto: 124px;
         /* el título ocupa dos líneas y abajo está la barra de navegación */
-        --reserva-clientes: calc(14px + var(--titulo-clientes) * 2.6 + 28px + var(--alto-foto) * 0.25 + 76px);
+        --reserva-clientes: calc(14px + var(--titulo-clientes) * 2.6 + var(--alto-aviso) + 28px + var(--alto-foto) * 0.25 + 76px);
     }
     .flecha-abajo { bottom: 72px; }
     #clientes, #clients { padding-bottom: 70px; scroll-margin-top: 20px; }
