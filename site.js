@@ -37,7 +37,8 @@
         for (let f = 0; f < FILAS; f++) {
             // Las miniaturas se reparten entre las filas: ninguna aparece en dos filas.
             // En celular se usan solo las primeras, para que la portada cargue rápido.
-            const lista = FILAS === 4 ? MINIATURAS : MINIATURAS.slice(0, FILAS * 4);
+            // En computadora también hay un tope: aunque sumes más miniaturas, la portada no tarda más en cargar.
+            const lista = MINIATURAS.slice(0, FILAS === 4 ? 62 : FILAS * 4);
             const propias = lista.filter(function (_, i) { return i % FILAS === f; });
             const haciaIzquierda = f % 2 === 0;
 
@@ -70,14 +71,97 @@
         fundido.setAttribute('aria-hidden', 'true');
         document.body.appendChild(fundido);
 
+        const flecha = document.createElement('button');
+        flecha.type = 'button';
+        flecha.className = 'flecha-abajo';
+        flecha.setAttribute('aria-label', ingles ? 'Scroll down' : 'Seguir bajando');
+        flecha.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5l8 8 8-8"/></svg>';
+        flecha.addEventListener('click', function () {
+            document.querySelector('.hero').nextElementSibling.scrollIntoView();
+        });
+        document.body.appendChild(flecha);
+
         const DISTANCIA = 260; // píxeles de scroll hasta que desaparece del todo
         function actualizarFundido() {
             const avance = Math.min(window.scrollY / DISTANCIA, 1);
             fundido.style.opacity = 1 - avance;
             fundido.style.visibility = avance >= 1 ? 'hidden' : 'visible';
+            flecha.style.opacity = 1 - avance;
+            flecha.style.visibility = fundido.style.visibility;
         }
         window.addEventListener('scroll', actualizarFundido, { passive: true });
         actualizarFundido();
+
+        // El desenfoque empieza a la altura del título de clientes, para que el título se lea bien.
+        function ajustarFundido() {
+            const titulo = document.querySelector('.hero').nextElementSibling.querySelector('h2').getBoundingClientRect();
+            const libre = window.innerHeight - (titulo.bottom + window.scrollY) + 10;
+            fundido.style.maxHeight = Math.max(70, libre) + 'px';
+        }
+        window.addEventListener('resize', ajustarFundido);
+        ajustarFundido();
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustarFundido);
+    }
+
+    // Evita que la página se mueva de fondo mientras hay algo abierto encima.
+    let bloqueos = 0;
+    function bloquearScroll() {
+        if (bloqueos++ > 0) return;
+        const anchoBarra = window.innerWidth - document.documentElement.clientWidth;
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.paddingRight = anchoBarra + 'px';
+    }
+    function liberarScroll() {
+        if (--bloqueos > 0) return;
+        document.documentElement.style.overflow = '';
+        document.body.style.paddingRight = '';
+    }
+
+    // Visor de una miniatura: se cierra con un clic en cualquier lado, con la X o con Esc.
+    let visor = null;
+    let visorImagen = null;
+    let visorCerrar = null;
+    let origenFoco = null;
+    let abierta = null;
+
+    function crearVisor() {
+        visor = document.createElement('div');
+        visor.className = 'visor';
+        visor.setAttribute('role', 'dialog');
+        visor.setAttribute('aria-modal', 'true');
+        visor.setAttribute('aria-label', textoMiniatura);
+        visor.innerHTML =
+            '<button type="button" class="visor-cerrar" aria-label="' + (ingles ? 'Close' : 'Cerrar') + '">&times;</button>' +
+            '<img class="visor-imagen" alt="' + textoMiniatura + '">' +
+            '<div class="visor-ayuda">' + (ingles ? 'Click anywhere or press Esc to close' : 'Haz clic en cualquier lado o presiona Esc para cerrar') + '</div>';
+        document.body.appendChild(visor);
+        visorImagen = visor.querySelector('.visor-imagen');
+        visorCerrar = visor.querySelector('.visor-cerrar');
+        visor.addEventListener('click', cerrarVisor);
+    }
+
+    function abrirVisor(src, item) {
+        if (!visor) crearVisor();
+        origenFoco = item;
+        abierta = src;
+        visorImagen.src = src; // se ve al instante con la versión chica...
+        const grande = src.replace('miniaturas/', 'miniaturas-grandes/');
+        const carga = new Image();
+        carga.onload = function () { if (abierta === src) visorImagen.src = grande; }; // ...y pasa a la nítida al cargar
+        carga.src = grande;
+        bloquearScroll();
+        visor.offsetWidth; // para que la transición se vea también la primera vez
+        visor.classList.add('abierto');
+        visorCerrar.focus();
+    }
+
+    function cerrarVisor() {
+        if (!visor || !visor.classList.contains('abierto')) return false;
+        abierta = null;
+        visor.classList.remove('abierto');
+        liberarScroll();
+        if (origenFoco) origenFoco.focus({ preventScroll: true });
+        return true;
     }
 
     // Página de trabajos: todas las miniaturas, con zoom al pasar el mouse.
@@ -121,157 +205,185 @@
             });
             galeria.appendChild(item);
         });
+    }
 
-        // Visor: se cierra con un clic en cualquier lado, con la X o con Esc.
-        const visor = document.createElement('div');
-        visor.className = 'visor';
-        visor.setAttribute('role', 'dialog');
-        visor.setAttribute('aria-modal', 'true');
-        visor.setAttribute('aria-label', textoMiniatura);
-        visor.innerHTML =
-            '<button type="button" class="visor-cerrar" aria-label="' + (ingles ? 'Close' : 'Cerrar') + '">&times;</button>' +
-            '<img class="visor-imagen" alt="' + textoMiniatura + '">' +
-            '<div class="visor-ayuda">' + (ingles ? 'Click anywhere or press Esc to close' : 'Haz clic en cualquier lado o presiona Esc para cerrar') + '</div>';
-        document.body.appendChild(visor);
-        const visorImagen = visor.querySelector('.visor-imagen');
-        const visorCerrar = visor.querySelector('.visor-cerrar');
-        let origenFoco = null;
-        let abierta = null;
+    // Clientes: quietos, y al hacer clic en uno se abren los trabajos que tenga cargados en datos.js.
+    let panel = null;
+    let panelTitulo = null;
+    let panelTrabajos = null;
+    let panelCerrar = null;
+    let origenPanel = null;
 
-        function abrirVisor(src, item) {
-            origenFoco = item;
-            abierta = src;
-            visorImagen.src = src; // se ve al instante con la versión chica...
-            const grande = src.replace('miniaturas/', 'miniaturas-grandes/');
-            const carga = new Image();
-            carga.onload = function () { if (abierta === src) visorImagen.src = grande; }; // ...y pasa a la nítida al cargar
-            carga.src = grande;
-            const anchoBarra = window.innerWidth - document.documentElement.clientWidth;
-            document.documentElement.style.overflow = 'hidden';
-            document.body.style.paddingRight = anchoBarra + 'px';
-            visor.classList.add('abierto');
-            visorCerrar.focus();
-        }
-
-        function cerrarVisor() {
-            if (!visor.classList.contains('abierto')) return;
-            abierta = null;
-            visor.classList.remove('abierto');
-            document.documentElement.style.overflow = '';
-            document.body.style.paddingRight = '';
-            if (origenFoco) origenFoco.focus({ preventScroll: true });
-        }
-
-        visor.addEventListener('click', cerrarVisor);
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') cerrarVisor();
+    function crearPanel() {
+        panel = document.createElement('div');
+        panel.className = 'panel-cliente';
+        panel.setAttribute('role', 'dialog');
+        panel.setAttribute('aria-modal', 'true');
+        panel.innerHTML =
+            '<button type="button" class="visor-cerrar"></button>' +
+            '<div class="panel-cliente-caja"><h3 class="panel-cliente-titulo"></h3><div class="panel-cliente-trabajos"></div></div>';
+        document.body.appendChild(panel);
+        panelTitulo = panel.querySelector('.panel-cliente-titulo');
+        panelTrabajos = panel.querySelector('.panel-cliente-trabajos');
+        panelCerrar = panel.querySelector('.visor-cerrar');
+        panelCerrar.innerHTML = '&times;';
+        panelCerrar.addEventListener('click', cerrarPanel);
+        panel.addEventListener('click', function (e) {
+            if (e.target === panel) cerrarPanel(); // clic afuera de la caja
         });
     }
 
-    // Clientes: una sola línea en loop infinito que avanza muy lento.
-    // Con el mouse en los costados se acelera hacia ese lado, y también se puede arrastrar (con mouse o dedo).
+    function abrirPanel(cliente, bloque) {
+        if (!panel) crearPanel();
+        origenPanel = bloque;
+        panelCerrar.setAttribute('aria-label', ingles ? 'Close' : 'Cerrar');
+        panel.setAttribute('aria-label', (ingles ? 'Work for ' : 'Trabajos para ') + cliente.canal);
+        panelTitulo.textContent = ingles ? 'Work for ' : 'Trabajos para ';
+        const nombre = document.createElement('em');
+        nombre.textContent = cliente.canal;
+        panelTitulo.appendChild(nombre);
+        panelTrabajos.textContent = '';
+        cliente.trabajos.forEach(function (src) {
+            const boton = document.createElement('button');
+            boton.type = 'button';
+            boton.className = 'panel-cliente-item';
+            boton.setAttribute('aria-label', ingles ? 'Open thumbnail' : 'Abrir miniatura');
+            boton.appendChild(crearImagen(src, textoMiniatura));
+            boton.addEventListener('click', function () { abrirVisor(src, boton); });
+            panelTrabajos.appendChild(boton);
+        });
+        bloquearScroll();
+        panel.scrollTop = 0;
+        panel.offsetWidth; // para que la transición se vea también la primera vez
+        panel.classList.add('abierto');
+        panelCerrar.focus();
+    }
+
+    function cerrarPanel() {
+        if (!panel || !panel.classList.contains('abierto')) return false;
+        panel.classList.remove('abierto');
+        liberarScroll();
+        if (origenPanel) origenPanel.focus({ preventScroll: true });
+        return true;
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') cerrarVisor() || cerrarPanel();
+    });
+
     const clientes = document.getElementById('clientes-grid');
     if (clientes && CLIENTES.length) {
-        const MINIMO_POR_VUELTA = 16; // para que nunca quede un hueco en pantallas anchas
-
-        let vuelta = CLIENTES;
-        while (vuelta.length < MINIMO_POR_VUELTA) vuelta = vuelta.concat(CLIENTES);
-
-        // La lista va duplicada: al llegar a la mitad, la animación reinicia sin que se note.
-        vuelta.concat(vuelta).forEach(function (cliente, i) {
+        CLIENTES.forEach(function (cliente) {
             const bloque = document.createElement('div');
             bloque.className = 'cliente';
-            if (i >= CLIENTES.length) bloque.setAttribute('aria-hidden', 'true'); // las copias no se leen dos veces
             bloque.appendChild(crearFoto('cliente-foto', cliente.foto, cliente.canal));
             const canal = document.createElement('div');
             canal.className = 'cliente-canal';
             canal.textContent = cliente.canal;
             bloque.appendChild(canal);
+
+            if (cliente.trabajos && cliente.trabajos.length) {
+                bloque.classList.add('con-trabajos');
+                bloque.tabIndex = 0;
+                bloque.setAttribute('role', 'button');
+                bloque.dataset.canal = cliente.canal;
+                bloque.setAttribute('aria-label', (ingles ? 'See work for ' : 'Ver trabajos para ') + cliente.canal);
+                bloque.addEventListener('click', function () { abrirPanel(cliente, bloque); });
+                bloque.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        abrirPanel(cliente, bloque);
+                    }
+                });
+            }
             clientes.appendChild(bloque);
         });
 
-        const VELOCIDAD_LENTA = 14; // píxeles por segundo cuando nadie lo toca
-        const VELOCIDAD_COSTADOS = 480; // píxeles por segundo con el mouse en el borde de la pantalla
-        const ZONA_CENTRAL = 0.5; // en esta parte del medio el mouse no acelera (así se puede mirar a cada cliente)
-        const INERCIA_MAXIMA = 2500;
-        const sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)');
+        // Una sola fila: se desliza con las flechas, arrastrando con el mouse o con el dedo.
         const carrusel = clientes.parentElement;
+        const marco = document.createElement('div');
+        marco.className = 'clientes-marco';
+        carrusel.replaceWith(marco);
+        marco.appendChild(carrusel);
 
-        let posicion = 0;
-        let velocidad = sinMovimiento.matches ? 0 : -VELOCIDAD_LENTA;
-        let mitad = clientes.offsetWidth / 2;
-        let mouseX = null;
-        let arrastrando = false;
-        let ultimoX = 0;
-        let ultimoTiempoArrastre = 0;
-        let anterior = performance.now();
-
-        new ResizeObserver(function () { mitad = clientes.offsetWidth / 2; }).observe(clientes);
-
-        function velocidadBuscada() {
-            if (sinMovimiento.matches) return 0;
-            if (mouseX !== null) {
-                const desdeElCentro = (mouseX / window.innerWidth - 0.5) * 2; // -1 a la izquierda, 1 a la derecha
-                const fuerza = (Math.abs(desdeElCentro) - ZONA_CENTRAL) / (1 - ZONA_CENTRAL);
-                // Mouse a la derecha: los círculos van a la izquierda, para ver los que siguen.
-                if (fuerza > 0) return -Math.sign(desdeElCentro) * VELOCIDAD_COSTADOS * fuerza * fuerza;
-            }
-            return -VELOCIDAD_LENTA;
+        function crearFlechaClientes(clase, trazo, sentido) {
+            const boton = document.createElement('button');
+            boton.type = 'button';
+            boton.className = 'clientes-flecha ' + clase;
+            boton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + trazo + '"/></svg>';
+            boton.addEventListener('click', function () {
+                // Avanza de a clientes enteros, dejando uno a la vista para no perder el hilo.
+                const paso = clientes.querySelector('.cliente').offsetWidth + parseFloat(getComputedStyle(clientes).columnGap);
+                const entran = Math.max(1, Math.floor(carrusel.clientWidth / paso) - 1);
+                carrusel.scrollBy({ left: sentido * entran * paso });
+            });
+            marco.appendChild(boton);
+            return boton;
         }
+        const flechaAnterior = crearFlechaClientes('anterior', 'M15 5l-7 7 7 7', -1);
+        const flechaSiguiente = crearFlechaClientes('siguiente', 'M9 5l7 7-7 7', 1);
+        textosFlechasClientes();
 
-        function animarClientes(ahora) {
-            const pasado = Math.min((ahora - anterior) / 1000, 0.05); // al volver de otra pestaña no pega un salto
-            anterior = ahora;
-            if (!arrastrando) {
-                velocidad += (velocidadBuscada() - velocidad) * (1 - Math.exp(-pasado * 3.5));
-                posicion += velocidad * pasado;
-            }
-            if (mitad > 0) {
-                while (posicion <= -mitad) posicion += mitad;
-                while (posicion > 0) posicion -= mitad;
-            }
-            clientes.style.transform = 'translate3d(' + posicion + 'px, 0, 0)';
-            requestAnimationFrame(animarClientes);
+        function actualizarFlechasClientes() {
+            const hayIzquierda = carrusel.scrollLeft > 4;
+            const hayDerecha = carrusel.scrollLeft + carrusel.clientWidth < carrusel.scrollWidth - 4;
+            flechaAnterior.classList.toggle('visible', hayIzquierda);
+            flechaSiguiente.classList.toggle('visible', hayDerecha);
+            marco.classList.toggle('hay-izquierda', hayIzquierda);
+            marco.classList.toggle('hay-derecha', hayDerecha);
         }
-        requestAnimationFrame(animarClientes);
+        // La primera flecha ya aparece puesta; recién al deslizar se anima.
+        marco.classList.add('sin-transicion');
+        carrusel.addEventListener('scroll', function () {
+            marco.classList.remove('sin-transicion');
+            actualizarFlechasClientes();
+        }, { passive: true });
+        new ResizeObserver(actualizarFlechasClientes).observe(carrusel);
+        actualizarFlechasClientes();
 
-        function soltar() {
-            if (!arrastrando) return;
-            arrastrando = false;
-            carrusel.classList.remove('arrastrando');
-            mouseX = null; // no acelera hasta que el mouse se vuelva a mover
-        }
-
+        // Arrastre con el mouse. Con el dedo ya lo hace el navegador.
+        let apretado = false;
+        let arrastrado = false;
+        let inicioX = 0;
+        let inicioScroll = 0;
         carrusel.addEventListener('pointerdown', function (e) {
-            if (e.pointerType === 'mouse' && e.button !== 0) return;
-            arrastrando = true;
-            carrusel.classList.add('arrastrando');
-            carrusel.setPointerCapture(e.pointerId);
-            ultimoX = e.clientX;
-            ultimoTiempoArrastre = e.timeStamp;
-            velocidad = 0;
+            if (e.pointerType !== 'mouse' || e.button !== 0) return;
+            apretado = true;
+            arrastrado = false;
+            inicioX = e.clientX;
+            inicioScroll = carrusel.scrollLeft;
         });
         carrusel.addEventListener('pointermove', function (e) {
-            if (arrastrando) {
-                const movido = e.clientX - ultimoX;
-                const tiempo = Math.max((e.timeStamp - ultimoTiempoArrastre) / 1000, 0.001);
-                posicion += movido;
-                // Al soltar sigue un poco con la velocidad que traía.
-                const actual = Math.max(-INERCIA_MAXIMA, Math.min(INERCIA_MAXIMA, movido / tiempo));
-                velocidad = velocidad * 0.6 + actual * 0.4;
-                ultimoX = e.clientX;
-                ultimoTiempoArrastre = e.timeStamp;
-            } else if (e.pointerType === 'mouse') {
-                mouseX = e.clientX;
+            if (!apretado) return;
+            const movido = e.clientX - inicioX;
+            if (!arrastrado && Math.abs(movido) > 6) {
+                arrastrado = true;
+                carrusel.classList.add('arrastrando');
+                carrusel.setPointerCapture(e.pointerId);
             }
+            if (arrastrado) carrusel.scrollLeft = inicioScroll - movido;
         });
-        carrusel.addEventListener('pointerup', function (e) {
-            if (e.timeStamp - ultimoTiempoArrastre > 120) velocidad = 0; // lo dejó quieto antes de soltar
-            soltar();
-        });
-        carrusel.addEventListener('pointercancel', soltar);
-        carrusel.addEventListener('pointerleave', function () { if (!arrastrando) mouseX = null; });
+        function soltarClientes() {
+            apretado = false;
+            carrusel.classList.remove('arrastrando');
+        }
+        carrusel.addEventListener('pointerup', soltarClientes);
+        carrusel.addEventListener('pointercancel', soltarClientes);
         carrusel.addEventListener('dragstart', function (e) { e.preventDefault(); });
+        // Si se estaba arrastrando, soltar el mouse no abre al cliente que quedó debajo.
+        carrusel.addEventListener('click', function (e) {
+            if (!arrastrado) return;
+            arrastrado = false;
+            e.stopPropagation();
+            e.preventDefault();
+        }, true);
+    }
+
+    function textosFlechasClientes() {
+        const anterior = document.querySelector('.clientes-flecha.anterior');
+        const siguiente = document.querySelector('.clientes-flecha.siguiente');
+        if (anterior) anterior.setAttribute('aria-label', ingles ? 'Previous clients' : 'Clientes anteriores');
+        if (siguiente) siguiente.setAttribute('aria-label', ingles ? 'More clients' : 'Más clientes');
     }
 
     // Foto de "Sobre mí".
@@ -332,7 +444,12 @@
             item.setAttribute('aria-label', ingles ? 'Open thumbnail' : 'Abrir miniatura');
             item.querySelector('img').alt = textoMiniatura;
         });
-        const visor = document.querySelector('.visor');
+        const flecha = document.querySelector('.flecha-abajo');
+        if (flecha) flecha.setAttribute('aria-label', ingles ? 'Scroll down' : 'Seguir bajando');
+        textosFlechasClientes();
+        document.querySelectorAll('.cliente.con-trabajos').forEach(function (bloque) {
+            bloque.setAttribute('aria-label', (ingles ? 'See work for ' : 'Ver trabajos para ') + bloque.dataset.canal);
+        });
         if (visor) {
             visor.setAttribute('aria-label', textoMiniatura);
             visor.querySelector('.visor-imagen').alt = textoMiniatura;
