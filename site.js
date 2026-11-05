@@ -63,6 +63,23 @@
         }
     }
 
+    // Portada: degradé negro sobre la parte de abajo de la pantalla, que desaparece al bajar.
+    if (fondo) {
+        const fundido = document.createElement('div');
+        fundido.className = 'fundido-inicio';
+        fundido.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(fundido);
+
+        const DISTANCIA = 260; // píxeles de scroll hasta que desaparece del todo
+        function actualizarFundido() {
+            const avance = Math.min(window.scrollY / DISTANCIA, 1);
+            fundido.style.opacity = 1 - avance;
+            fundido.style.visibility = avance >= 1 ? 'hidden' : 'visible';
+        }
+        window.addEventListener('scroll', actualizarFundido, { passive: true });
+        actualizarFundido();
+    }
+
     // Página de trabajos: todas las miniaturas, con zoom al pasar el mouse.
     const galeria = document.getElementById('galeria');
     if (galeria) {
@@ -91,7 +108,63 @@
                 const y = r.top - extraY < MARGEN ? 'top' : r.bottom + extraY > window.innerHeight - MARGEN ? 'bottom' : 'center';
                 item.style.transformOrigin = x + ' ' + y;
             });
+            // Clic: abre la miniatura grande.
+            item.tabIndex = 0;
+            item.setAttribute('role', 'button');
+            item.setAttribute('aria-label', ingles ? 'Open thumbnail' : 'Abrir miniatura');
+            item.addEventListener('click', function () { abrirVisor(src, item); });
+            item.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    abrirVisor(src, item);
+                }
+            });
             galeria.appendChild(item);
+        });
+
+        // Visor: se cierra con un clic en cualquier lado, con la X o con Esc.
+        const visor = document.createElement('div');
+        visor.className = 'visor';
+        visor.setAttribute('role', 'dialog');
+        visor.setAttribute('aria-modal', 'true');
+        visor.setAttribute('aria-label', textoMiniatura);
+        visor.innerHTML =
+            '<button type="button" class="visor-cerrar" aria-label="' + (ingles ? 'Close' : 'Cerrar') + '">&times;</button>' +
+            '<img class="visor-imagen" alt="' + textoMiniatura + '">' +
+            '<div class="visor-ayuda">' + (ingles ? 'Click anywhere or press Esc to close' : 'Haz clic en cualquier lado o presiona Esc para cerrar') + '</div>';
+        document.body.appendChild(visor);
+        const visorImagen = visor.querySelector('.visor-imagen');
+        const visorCerrar = visor.querySelector('.visor-cerrar');
+        let origenFoco = null;
+        let abierta = null;
+
+        function abrirVisor(src, item) {
+            origenFoco = item;
+            abierta = src;
+            visorImagen.src = src; // se ve al instante con la versión chica...
+            const grande = src.replace('miniaturas/', 'miniaturas-grandes/');
+            const carga = new Image();
+            carga.onload = function () { if (abierta === src) visorImagen.src = grande; }; // ...y pasa a la nítida al cargar
+            carga.src = grande;
+            const anchoBarra = window.innerWidth - document.documentElement.clientWidth;
+            document.documentElement.style.overflow = 'hidden';
+            document.body.style.paddingRight = anchoBarra + 'px';
+            visor.classList.add('abierto');
+            visorCerrar.focus();
+        }
+
+        function cerrarVisor() {
+            if (!visor.classList.contains('abierto')) return;
+            abierta = null;
+            visor.classList.remove('abierto');
+            document.documentElement.style.overflow = '';
+            document.body.style.paddingRight = '';
+            if (origenFoco) origenFoco.focus({ preventScroll: true });
+        }
+
+        visor.addEventListener('click', cerrarVisor);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') cerrarVisor();
         });
     }
 
