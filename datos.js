@@ -38,6 +38,7 @@ const CLIENTES = [
     { canal: "La Cobra", foto: "clientes/La_Cobra.webp" },
     { canal: "Luquitas Rodriguez", foto: "clientes/Luquitas_Rodriguez.webp" },
     { canal: "Papo MC", foto: "clientes/Papo_MC.webp" },
+    { canal: "Gazir", foto: "clientes/Gazir.webp" },
     { canal: "Delantero09", foto: "clientes/Delantero09.webp" },
     { canal: "iMicaelax", foto: "clientes/iMicaelax.webp" },
     { canal: "Franco Pisso", foto: "clientes/Franco_Pisso.webp" },
