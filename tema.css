@@ -57,7 +57,8 @@ h2 em {
 
 /* --- Portada: no ocupa toda la pantalla, abajo ya asoman los clientes --- */
 .hero {
-    --alto-hero: clamp(600px, 76svh, 1100px);
+    --reserva-clientes: 420px; /* lo que queda libre abajo: título, círculos y nombres de los clientes */
+    --alto-hero: clamp(330px, calc(100svh - var(--reserva-clientes)), 1100px);
     --extra-fondo: 260px; /* cuánto siguen las miniaturas por detrás de los clientes */
     --alto-fila: calc((var(--alto-hero) + var(--extra-fondo) - (var(--filas) - 1) * 10px) / var(--filas));
     padding-top: 60px;
@@ -92,9 +93,9 @@ h2 em {
 }
 .nav-logo img, .hero-logo { filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.95)); }
 h1 {
-    font-size: clamp(2.9rem, min(7vw, 10.5vh), 6.6rem);
+    font-size: clamp(2.9rem, min(7vw, 9vh), 6.6rem);
     line-height: 1.04;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
 }
 .gradient-text {
     font-family: var(--serif);
@@ -110,7 +111,8 @@ h1 {
     color: #dfe3e0;
     font-size: 1.08rem;
     font-weight: 300;
-    margin-bottom: 2.4rem;
+    max-width: 780px;
+    margin-bottom: 1.9rem;
 }
 
 /* --- Botones --- */
@@ -133,7 +135,11 @@ h1 {
 #clientes .section-header p, #clients .section-header p { color: #dfe3e0; }
 .section-header p { font-weight: 300; color: var(--texto-suave); }
 /* Más lugar alrededor para que el resplandor no se corte; los márgenes negativos mantienen la separación */
-.clientes-carrusel { padding: 80px 0 70px; margin: -54px -20px -30px; }
+.clientes-carrusel { padding: 80px 0 70px; margin: -60px -20px -30px; }
+/* El movimiento lo maneja site.js: avanza lento, acelera con el mouse en los costados y se puede arrastrar */
+.clientes-carrusel { cursor: grab; touch-action: pan-y; -webkit-user-select: none; user-select: none; }
+.clientes-carrusel.arrastrando { cursor: grabbing; }
+.clientes-grid { animation: none; }
 .cliente { width: 205px; margin-right: 2.25rem; }
 /* Círculo: trazo blanco, separación y un segundo aro verde con brillo */
 .cliente-foto {
@@ -167,10 +173,10 @@ h1 {
     left: 0;
     right: 0;
     bottom: 0;
-    height: 34vh;
+    height: 16vh;
     z-index: 900;
     pointer-events: none;
-    background: linear-gradient(to bottom, rgba(9, 11, 10, 0) 0%, rgba(9, 11, 10, 0.55) 50%, rgba(9, 11, 10, 0.92) 100%);
+    background: linear-gradient(to bottom, rgba(9, 11, 10, 0) 0%, rgba(9, 11, 10, 0.3) 60%, rgba(9, 11, 10, 0.88) 100%);
     -webkit-backdrop-filter: blur(2px);
     backdrop-filter: blur(2px);
     -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 45%);
@@ -272,9 +278,25 @@ footer { color: var(--texto-suave); }
 .footer-links a { font-weight: 500; }
 .footer-links a:hover { color: var(--verde); }
 
+/* --- Pantallas bajas (notebooks, Windows con zoom 125%): todo más compacto para que entren los clientes --- */
+@media (min-width: 769px) and (max-height: 820px) {
+    .hero { --reserva-clientes: 285px; --extra-fondo: 200px; padding-top: 74px; }
+    .badge { margin-bottom: 0.8rem; }
+    h1 { font-size: clamp(2.9rem, 8.5vh, 4.6rem); margin-bottom: 0.8rem; }
+    .subtitle { font-size: 1rem; margin-bottom: 1.1rem; }
+    .hero .btn { padding: 11px 26px; }
+    #clientes, #clients { padding-top: 4px; }
+    #clientes h2, #clients h2 { font-size: 2.1rem; margin-bottom: 0.3rem; }
+    #clientes .section-header, #clients .section-header { margin-bottom: 14px; }
+    .clientes-carrusel { margin-top: -66px; }
+    .cliente { width: 170px; margin-right: 1.5rem; }
+    .cliente-foto { width: 130px; height: 130px; margin-bottom: 1.1rem; }
+    .cliente-canal { font-size: 0.92rem; }
+}
+
 /* --- Celular --- */
 @media (max-width: 768px) {
-    .hero { padding-top: 0; --extra-fondo: 170px; }
+    .hero { padding-top: 0; --alto-hero: clamp(600px, 76svh, 1100px); --extra-fondo: 170px; }
     .navbar { padding: 10px 12px; }
     .nav-link { font-size: 0.8rem; }
     .lang-control { margin-left: auto; }
