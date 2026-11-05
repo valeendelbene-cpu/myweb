@@ -34,11 +34,19 @@
         const FILAS = window.innerWidth <= 768 ? 7 : 4;
         fondo.parentElement.style.setProperty('--filas', FILAS);
 
+        // Cada visita muestra una mezcla distinta de todas las miniaturas, sin repetir.
+        // Solo se cargan algunas, para que la portada abra rápido aunque sumes muchas más.
+        const mezcla = MINIATURAS.slice();
+        for (let i = mezcla.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const cambio = mezcla[i];
+            mezcla[i] = mezcla[j];
+            mezcla[j] = cambio;
+        }
+        const lista = mezcla.slice(0, FILAS === 4 ? 62 : FILAS * 4);
+
         for (let f = 0; f < FILAS; f++) {
             // Las miniaturas se reparten entre las filas: ninguna aparece en dos filas.
-            // En celular se usan solo las primeras, para que la portada cargue rápido.
-            // En computadora también hay un tope: aunque sumes más miniaturas, la portada no tarda más en cargar.
-            const lista = MINIATURAS.slice(0, FILAS === 4 ? 62 : FILAS * 4);
             const propias = lista.filter(function (_, i) { return i % FILAS === f; });
             const haciaIzquierda = f % 2 === 0;
 
