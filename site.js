@@ -485,9 +485,87 @@
         lugarFoto.replaceWith(crearFoto('mi-foto', MI_FOTO, ingles ? 'Photo of the designer behind VDB Designs' : 'Foto de quien está detrás de VDB Designs'));
     }
 
+    // Miniaturas destacadas: cada una es un link al video, con el canal y sus visitas.
+    const grillaDestacados = document.getElementById('destacados-grid');
+    function pintarDestacados() {
+        if (!grillaDestacados) return;
+        const lista = typeof DESTACADOS !== 'undefined' ? DESTACADOS : [];
+        grillaDestacados.closest('section').hidden = lista.length === 0;
+        grillaDestacados.innerHTML = '';
+        // Millones con un decimal (1,4 M); miles redondeados (687 mil).
+        const millones = new Intl.NumberFormat(ingles ? 'en' : 'es', { notation: 'compact', maximumFractionDigits: 1 });
+        const miles = new Intl.NumberFormat(ingles ? 'en' : 'es', { notation: 'compact', maximumFractionDigits: 0 });
+        const formato = { format: function (n) { return (n >= 1000000 ? millones : miles).format(n); } };
+        lista.forEach(function (d) {
+            const cliente = CLIENTES.find(function (c) { return c.canal === d.cliente; });
+            const tarjeta = document.createElement('a');
+            tarjeta.className = 'destacado';
+            tarjeta.href = d.link;
+            tarjeta.target = '_blank';
+            tarjeta.rel = 'noopener';
+
+            const imagen = document.createElement('div');
+            imagen.className = 'destacado-imagen';
+            imagen.appendChild(crearImagen(d.miniatura, (ingles ? 'Thumbnail for ' : 'Miniatura para ') + (d.canal || d.cliente)));
+            imagen.insertAdjacentHTML('beforeend', '<span class="destacado-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>');
+            tarjeta.appendChild(imagen);
+
+            const info = document.createElement('div');
+            info.className = 'destacado-info';
+            if (cliente && cliente.foto) {
+                const avatar = crearImagen(cliente.foto, '');
+                avatar.className = 'destacado-avatar';
+                info.appendChild(avatar);
+            }
+            const textos = document.createElement('div');
+            textos.className = 'destacado-textos';
+            const canal = document.createElement('span');
+            canal.className = 'destacado-cliente';
+            canal.textContent = d.canal || d.cliente;
+            textos.appendChild(canal);
+            if (d.titulo) {
+                const titulo = document.createElement('span');
+                titulo.className = 'destacado-titulo';
+                titulo.textContent = d.titulo;
+                titulo.title = d.titulo; // el título completo al pasar el mouse
+                textos.appendChild(titulo);
+            }
+            info.appendChild(textos);
+            tarjeta.appendChild(info);
+
+            const pie = document.createElement('div');
+            pie.className = 'destacado-pie';
+            const visitas = document.createElement('span');
+            visitas.className = 'destacado-visitas';
+            const numero = document.createElement('strong');
+            numero.textContent = formato.format(d.visitas);
+            visitas.appendChild(numero);
+            visitas.appendChild(document.createTextNode(ingles ? ' views' : ' visitas'));
+            pie.appendChild(visitas);
+            pie.insertAdjacentHTML('beforeend', '<span class="destacado-link">' + 'YouTube' + ' <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 16L16 8M9 8h7v7"/></svg></span>');
+            tarjeta.appendChild(pie);
+
+            grillaDestacados.appendChild(tarjeta);
+        });
+    }
+    pintarDestacados();
+
+    // "Cómo trabajo": los pasos aparecen de a uno, de izquierda a derecha, al llegar a la sección.
+    const proceso = document.querySelector('.proceso');
+    const sinMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (proceso && 'IntersectionObserver' in window && !sinMovimiento) {
+        proceso.classList.add('animar');
+        const mirador = new IntersectionObserver(function (entradas) {
+            if (!entradas[0].isIntersecting) return;
+            proceso.classList.add('visible');
+            mirador.disconnect();
+        }, { threshold: 0.25 });
+        mirador.observe(proceso);
+    }
+
     // Cambio de idioma sin recargar: se trae la otra versión de la página y se copian solo sus textos.
     // El fondo, el carrusel, la posición en la página y lo escrito en el formulario no se tocan.
-    const PARTES_CON_TEXTO = '.nav-logo, .nav-link, .lang-control, .badge, h1, .subtitle, .btn, .section-header, .sobre-mi-texto, .form-label, .form-input, .trabajos-cta > p, footer > p';
+    const PARTES_CON_TEXTO = '.nav-logo, .nav-link, .lang-control, .badge, h1, .subtitle, .btn, .section-header, .proceso, .sobre-mi-texto, .form-label, .form-input, .trabajos-cta > p, footer > p';
     const paginas = new Map();
     let rutaActual = location.pathname;
     let ultimoPedido = 0;
@@ -540,6 +618,7 @@
         const flecha = document.querySelector('.flecha-abajo');
         if (flecha) flecha.setAttribute('aria-label', ingles ? 'Scroll down' : 'Seguir bajando');
         textosFlechasClientes();
+        pintarDestacados();
         document.querySelectorAll('.cliente.con-trabajos').forEach(function (bloque) {
             bloque.setAttribute('aria-label', (ingles ? 'See work for ' : 'Ver trabajos para ') + bloque.dataset.canal);
         });

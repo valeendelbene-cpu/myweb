@@ -99,6 +99,8 @@ const MINIATURAS = [
     "miniaturas/133.webp",
     "miniaturas/134.webp",
     "miniaturas/135.webp",
+    "miniaturas/136.webp",
+    "miniaturas/137.webp",
 ];
 
 // Creadores con los que trabajaste.
@@ -107,13 +109,13 @@ const MINIATURAS = [
 //   { canal: "Coscu", foto: "clientes/Coscu.webp", trabajos: ["miniaturas/05.webp", "miniaturas/12.webp"] },
 // Sin trabajos, el cliente se muestra igual pero no se puede abrir.
 const CLIENTES = [
-    { canal: "Vorterix", foto: "clientes/Vorterix.webp", trabajos: ["miniaturas/04.webp", "miniaturas/06.webp", "miniaturas/13.webp", "miniaturas/14.webp", "miniaturas/15.webp", "miniaturas/16.webp", "miniaturas/20.webp", "miniaturas/24.webp"] },
+    { canal: "Vorterix", foto: "clientes/Vorterix.webp", trabajos: ["miniaturas/04.webp", "miniaturas/06.webp", "miniaturas/13.webp", "miniaturas/14.webp", "miniaturas/15.webp", "miniaturas/16.webp", "miniaturas/20.webp", "miniaturas/24.webp", "miniaturas/136.webp"] },
     { canal: "Coscu", foto: "clientes/Coscu.webp", trabajos: ["miniaturas/28.webp", "miniaturas/31.webp", "miniaturas/63.webp", "miniaturas/64.webp", "miniaturas/65.webp", "miniaturas/66.webp", "miniaturas/67.webp", "miniaturas/68.webp", "miniaturas/69.webp", "miniaturas/70.webp", "miniaturas/71.webp", "miniaturas/72.webp"] },
     { canal: "Liga Bazooka", foto: "clientes/Liga_Bazooka.webp", trabajos: ["miniaturas/43.webp", "miniaturas/44.webp", "miniaturas/45.webp", "miniaturas/46.webp"] },
     { canal: "Gaston Edul", foto: "clientes/Gaston_Edul.webp", trabajos: ["miniaturas/03.webp", "miniaturas/12.webp"] },
     { canal: "La Cobra", foto: "clientes/La_Cobra.webp", trabajos: ["miniaturas/01.webp", "miniaturas/08.webp", "miniaturas/09.webp", "miniaturas/10.webp", "miniaturas/11.webp", "miniaturas/18.webp", "miniaturas/27.webp", "miniaturas/32.webp", "miniaturas/35.webp", "miniaturas/36.webp", "miniaturas/37.webp", "miniaturas/38.webp"] },
     { canal: "Luquitas Rodriguez", foto: "clientes/Luquitas_Rodriguez.webp", trabajos: ["miniaturas/05.webp", "miniaturas/17.webp", "miniaturas/19.webp", "miniaturas/21.webp", "miniaturas/26.webp", "miniaturas/100.webp", "miniaturas/101.webp", "miniaturas/102.webp"] },
-    { canal: "Papo MC", foto: "clientes/Papo_MC.webp", trabajos: ["miniaturas/30.webp", "miniaturas/39.webp", "miniaturas/40.webp", "miniaturas/41.webp", "miniaturas/42.webp", "miniaturas/111.webp", "miniaturas/112.webp", "miniaturas/113.webp", "miniaturas/114.webp", "miniaturas/115.webp"] },
+    { canal: "Papo MC", foto: "clientes/Papo_MC.webp", trabajos: ["miniaturas/30.webp", "miniaturas/39.webp", "miniaturas/40.webp", "miniaturas/41.webp", "miniaturas/42.webp", "miniaturas/111.webp", "miniaturas/112.webp", "miniaturas/113.webp", "miniaturas/114.webp", "miniaturas/115.webp", "miniaturas/137.webp"] },
     { canal: "Gazir", foto: "clientes/Gazir.webp", trabajos: ["miniaturas/02.webp", "miniaturas/22.webp", "miniaturas/83.webp", "miniaturas/84.webp"] },
     { canal: "Delantero09", foto: "clientes/Delantero09.webp", trabajos: ["miniaturas/55.webp", "miniaturas/59.webp", "miniaturas/73.webp", "miniaturas/74.webp", "miniaturas/75.webp", "miniaturas/76.webp"] },
     { canal: "iMicaelax", foto: "clientes/iMicaelax.webp", trabajos: ["miniaturas/07.webp", "miniaturas/34.webp", "miniaturas/58.webp", "miniaturas/127.webp", "miniaturas/128.webp", "miniaturas/129.webp", "miniaturas/130.webp", "miniaturas/131.webp", "miniaturas/132.webp", "miniaturas/133.webp", "miniaturas/134.webp", "miniaturas/135.webp"] },
@@ -126,6 +128,27 @@ const CLIENTES = [
     { canal: "Maxi Elemental", foto: "clientes/Maxi_Elemental.webp", trabajos: ["miniaturas/60.webp", "miniaturas/103.webp", "miniaturas/104.webp", "miniaturas/105.webp", "miniaturas/106.webp", "miniaturas/107.webp", "miniaturas/108.webp"] },
     { canal: "Owen Pelle", foto: "clientes/Owen_Pelle.webp", trabajos: ["miniaturas/109.webp", "miniaturas/110.webp"] },
     { canal: "Staryuuki", foto: "clientes/Staryuuki.webp", trabajos: ["miniaturas/124.webp", "miniaturas/125.webp", "miniaturas/126.webp"] },
+];
+
+// Miniaturas destacadas: videos en los que la miniatura funcionó muy bien.
+// Mientras la lista esté vacía, la sección no aparece en la web. Ejemplo:
+//   { cliente: "Coscu", miniatura: "miniaturas-grandes/28.webp", titulo: "Título del video",
+//     link: "https://www.youtube.com/watch?v=...", visitas: 1250000 },
+// cliente = igual que en CLIENTES (así aparece su foto). titulo es opcional.
+// canal = opcional, por si el video es de otro canal del mismo cliente (se muestra ese nombre).
+// visitas = el número completo, sin puntos; la web lo muestra como "1,3 M".
+// Las visitas no se actualizan solas: son las que tenía cada video el 16/11/2026.
+const DESTACADOS = [
+    { cliente: "Liga Bazooka", miniatura: "miniaturas-grandes/46.webp", titulo: "CHILI PARKER vs G SONY | Movistar Arena 2024",
+      link: "https://www.youtube.com/watch?v=yVoiSxxUFBE", visitas: 5075329 },
+    { cliente: "Papo MC", miniatura: "miniaturas-grandes/137.webp", titulo: "SE NECESITA MÁS QUE RAPEAR BIEN PARA GANARLE A MAU",
+      link: "https://www.youtube.com/watch?v=XpDYMJAkMQ8", visitas: 1926013 },
+    { cliente: "La Cobra", canal: "La Cobra Xtra", miniatura: "miniaturas-grandes/32.webp", titulo: "LA COBRA REACCIONA A LOS MOMENTOS MÁS GRACIOSOS DEL FÚTBOL MEXICANO",
+      link: "https://www.youtube.com/watch?v=226FDFyUnFo", visitas: 1404189 },
+    { cliente: "Vorterix", canal: "Paren la mano", miniatura: "miniaturas-grandes/136.webp", titulo: "ADIVINANDO EDADES PERO TODO SE SALIÓ DE CONTROL",
+      link: "https://www.youtube.com/watch?v=lSSwJl7E11w", visitas: 686597 },
+    { cliente: "Fede Coria", miniatura: "miniaturas-grandes/81.webp", titulo: "Clases de Tenis con La Mojarra // EP 2 / Davoo Xeneize + Paulo Dybala",
+      link: "https://www.youtube.com/watch?v=9bywArnu8-8", visitas: 455885 },
 ];
 
 // Tu foto para la sección "Sobre mí".
